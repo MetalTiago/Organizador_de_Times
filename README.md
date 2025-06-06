@@ -54,5 +54,5 @@ Organizador_de_Times/
 
 ## 🧑‍💻 Autor
 
-Desenvolvido por **Seu Nome**.  
-GitHub: [@seu-usuario](https://github.com/seu-usuario)
+Desenvolvido por MetalTiago.  
+GitHub: [@seu-usuario](https://github.com/MetalTiago)
