@@ -14,7 +14,7 @@ Este é um aplicativo feito em Python com interface gráfica utilizando [Flet](h
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/Organizador_de_Times.git
+git clone https://github.com/MetalTiago/Organizador_de_Times.git
 cd Organizador_de_Times
 ```
 
