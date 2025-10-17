@@ -47,6 +47,8 @@ class AppState:
         self.manage_menu_item = None
         self.delete_menu_item = None
 
+        self.organize_button = None
+
     # --- MÉTODO UPDATE ADICIONADO ---
     # Este método permite que outras partes do código chamem a atualização da página
     # de uma forma mais limpa, através do objeto de estado.

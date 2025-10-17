@@ -1,6 +1,5 @@
 # views/manage_players_view.py
 import flet as ft
-# Importa a nova função e as bibliotecas necessárias para as imagens
 from db_handler import get_all_players, get_players_by_list, update_players_in_list, get_list_name
 import os
 import base64
@@ -19,7 +18,6 @@ class PlayerCheckboxItem(ft.Row):
             border_radius=4
         )
         
-        # --- LÓGICA DO AVATAR (FOTO) ---
         avatar_display = ft.Container(
             width=40, height=40,
             content=ft.Icon(ft.icons.PERSON_OUTLINE),
@@ -32,12 +30,16 @@ class PlayerCheckboxItem(ft.Row):
                     image_base64 = base64.b64encode(f.read()).decode('utf-8')
                 avatar_display.content = ft.Image(src_base64=image_base64, fit=ft.ImageFit.COVER, border_radius=20)
             except:
-                # Se o arquivo de imagem não for encontrado, mantém o ícone padrão
                 pass
         
-        # Usamos a propriedade 'leading' do ListTile para posicionar o avatar
+        # --- ALTERAÇÃO 1: O controle de texto do nome agora é uma variável de instância ---
+        self.player_name_text = ft.Text(
+            player_data[1],
+            color=ft.colors.PRIMARY if is_selected else None # Define a cor inicial
+        )
+        
         list_tile = ft.ListTile(
-            title=ft.Text(player_data[1]),
+            title=self.player_name_text, # Usa a nova variável
             leading=avatar_display
         )
         
@@ -52,10 +54,13 @@ class PlayerCheckboxItem(ft.Row):
         
         self.controls = [self.indicator_strip, self.content_container]
 
+    # --- ALTERAÇÃO 2: A função toggle agora atualiza a cor do texto ---
     def toggle(self, e):
         self.selected = not self.selected
         self.indicator_strip.bgcolor = ft.colors.PRIMARY if self.selected else None
         self.content_container.bgcolor = ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if self.selected else None
+        # --- Lógica para mudar a cor do texto ---
+        self.player_name_text.color = ft.colors.PRIMARY if self.selected else None
         self.update()
 
 def build_manage_players_view(state):
@@ -84,8 +89,6 @@ def build_manage_players_view(state):
             state.page.snack_bar.open = True
             state.update()
 
-    # --- CORREÇÃO DO TÍTULO ---
-    # Busca o nome diretamente do banco de dados, de forma segura
     active_list_name = get_list_name(state.active_list_id) if state.active_list_id != 0 else ""
 
     header = ft.Row(

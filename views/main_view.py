@@ -7,11 +7,20 @@ def build_main_view(state):
     
     def update_menu_state():
         is_all_view = (state.active_list_id == 0)
+        
+        # Desabilita os itens de menu se a lista "geral" estiver selecionada
         if hasattr(state, 'rename_menu_item') and state.rename_menu_item is not None:
             state.rename_menu_item.disabled = is_all_view
             state.manage_menu_item.disabled = is_all_view
             state.delete_menu_item.disabled = is_all_view
             state.list_management_menu.update()
+        
+        # --- ALTERAÇÃO 2: LÓGICA PARA DESABILITAR O BOTÃO DE ORGANIZAR ---
+        # Desabilita o botão de organizar e adiciona uma dica útil
+        if hasattr(state, 'organize_button') and state.organize_button is not None:
+            state.organize_button.disabled = is_all_view
+            state.organize_button.tooltip = "Selecione uma lista específica para poder organizar os times" if is_all_view else "Organizar Times"
+            state.organize_button.update()
 
     def on_list_change(e):
         state.active_list_id = int(e.control.value)
@@ -27,6 +36,7 @@ def build_main_view(state):
         update_menu_state()
     state.populate_lists_dropdown = populate_lists_dropdown
 
+    # ... (O resto das funções como open_new_list_dialog, open_rename_list_dialog, etc., continuam iguais)
     def open_new_list_dialog(e):
         new_list_name = ft.TextField(label="Nome da Nova Lista", autofocus=True)
         def save_new_list(e):
@@ -80,13 +90,9 @@ def build_main_view(state):
         state.page.dialog = ft.AlertDialog(title=ft.Text("Confirmar Exclusão"), content=ft.Text(f"Tem certeza que deseja apagar a lista '{list_text}'?"), actions=[ft.TextButton("Sim, apagar", on_click=confirm_delete, style=ft.ButtonStyle(color=ft.colors.RED)), ft.TextButton("Cancelar", on_click=lambda e: setattr(state.page.dialog, 'open', False) or state.page.update())])
         state.page.dialog.open = True
         state.update()
-
+    
     def start_new_selection(e):
-        if state.active_list_id == 0:
-            state.page.snack_bar = ft.SnackBar(ft.Text("Crie ou selecione uma lista específica para organizar times."), bgcolor=ft.colors.ORANGE_700)
-            state.page.snack_bar.open = True
-            state.update()
-            return
+        # A verificação de erro antiga foi removida daqui, pois agora o botão é desabilitado
         state.selecionados.clear()
         state.photo_cache.clear()
         state.navigate_to("selection")
@@ -108,11 +114,31 @@ def build_main_view(state):
         ]
     )
     
+    # --- ALTERAÇÃO 3: Salvando a referência do botão de organizar ---
+    state.organize_button = ft.ElevatedButton(
+        "Organizar Times", 
+        icon=ft.icons.GROUP_ADD, 
+        on_click=start_new_selection, 
+        expand=True
+    )
+
     main_view_content = ft.Column(
         [
-            ft.Row([state.lists_dropdown, state.list_management_menu]),
+            # --- ALTERAÇÃO 1: Adicionando o Rótulo (Label) ---
+            ft.Column([
+                ft.Text("Selecione a Lista:", weight="bold", size=14),
+                ft.Row([state.lists_dropdown, state.list_management_menu]),
+            ], spacing=5),
+            
             ft.Divider(),
-            ft.ResponsiveRow([ft.Container(content=ft.ElevatedButton("Organizar Times", icon=ft.icons.GROUP_ADD, on_click=start_new_selection, expand=True), col={"xs": 12, "sm": 6}), ft.Container(content=ft.ElevatedButton("Cadastrar Jogador", icon=ft.icons.PERSON_ADD, on_click=lambda e: state.show_form(), expand=True), col={"xs": 12, "sm": 6}),], alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.CENTER),
+            ft.ResponsiveRow(
+                [
+                    ft.Container(content=state.organize_button, col={"xs": 12, "sm": 6}), 
+                    ft.Container(content=ft.ElevatedButton("Cadastrar Jogador", icon=ft.icons.PERSON_ADD, on_click=lambda e: state.show_form(), expand=True), col={"xs": 12, "sm": 6}),
+                ], 
+                alignment=ft.MainAxisAlignment.CENTER, 
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
+            ),
             ft.Divider(), ft.Row([state.filter_name_input]), ft.Row([state.loading_indicator], alignment=ft.MainAxisAlignment.CENTER),
             state.lista_jogadores,
         ],

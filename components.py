@@ -195,7 +195,38 @@ def atualizar_tabela(app_state, apply_filters=False):
         users = [user for user in users if name_filter in user[1].lower()]
         
     if not users:
-        app_state.lista_jogadores.controls.append(ft.Container(content=ft.Text("Nenhum jogador encontrado.", text_align=ft.TextAlign.CENTER), padding=20))
+        # --- ALTERAÇÃO AQUI ---
+        is_all_players_view = (list_id == 0)
+        
+        empty_state_component = ft.Container(
+            content=ft.Column(
+                [
+                    ft.Icon(ft.icons.SPORTS_SOCCER_OUTLINED, size=60, color=ft.colors.with_opacity(0.4, ft.colors.ON_SURFACE)),
+                    ft.Text("Nenhum jogador por aqui...", size=18, weight="bold"),
+                    ft.Text(
+                        "Clique em 'Cadastrar Jogador' para adicionar o primeiro!",
+                        size=14,
+                        color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
+                        text_align=ft.TextAlign.CENTER
+                    ),
+                    # Adiciona a segunda instrução apenas se não estivermos na visão "Todos os Jogadores"
+                    ft.Text(
+                        "Ou use o menu (⋮) e 'Gerenciar Jogadores' para adicionar jogadores já existentes a esta lista.",
+                        size=14,
+                        color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
+                        visible=not is_all_players_view, # A instrução só aparece em listas específicas
+                        text_align=ft.TextAlign.CENTER
+                    ),
+                ],
+                spacing=10,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                opacity=0.8,
+            ),
+            padding=ft.padding.symmetric(vertical=50, horizontal=10),
+            alignment=ft.alignment.center
+        )
+        # --- FIM DA ALTERAÇÃO ---
+        app_state.lista_jogadores.controls.append(empty_state_component)
     else:
         for user in users:
             user_dict = {"id": user[0], "name": user[1], "skill": user[2], "photo_path": user[3]}
