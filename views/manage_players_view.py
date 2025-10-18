@@ -3,6 +3,7 @@ import flet as ft
 from db_handler import get_all_players, get_players_by_list, update_players_in_list, get_list_name
 import os
 import base64
+from localization import get_string # Importa a função
 
 class PlayerCheckboxItem(ft.Row):
     def __init__(self, player_data, is_selected):
@@ -12,17 +13,8 @@ class PlayerCheckboxItem(ft.Row):
         self.alignment = ft.MainAxisAlignment.SPACE_BETWEEN
         self.vertical_alignment = ft.CrossAxisAlignment.CENTER
         
-        self.indicator_strip = ft.Container(
-            width=5, height=55,
-            bgcolor=ft.colors.PRIMARY if is_selected else None,
-            border_radius=4
-        )
-        
-        avatar_display = ft.Container(
-            width=40, height=40,
-            content=ft.Icon(ft.icons.PERSON_OUTLINE),
-            border_radius=20
-        )
+        self.indicator_strip = ft.Container(width=5, height=55, bgcolor=ft.colors.PRIMARY if is_selected else None, border_radius=4)
+        avatar_display = ft.Container(width=40, height=40, content=ft.Icon(ft.icons.PERSON_OUTLINE), border_radius=20)
         photo_path = player_data[3]
         if photo_path:
             try:
@@ -32,34 +24,16 @@ class PlayerCheckboxItem(ft.Row):
             except:
                 pass
         
-        # --- ALTERAÇÃO 1: O controle de texto do nome agora é uma variável de instância ---
-        self.player_name_text = ft.Text(
-            player_data[1],
-            color=ft.colors.PRIMARY if is_selected else None # Define a cor inicial
-        )
-        
-        list_tile = ft.ListTile(
-            title=self.player_name_text, # Usa a nova variável
-            leading=avatar_display
-        )
-        
-        self.content_container = ft.Container(
-            content=list_tile,
-            bgcolor=ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if is_selected else None,
-            border=ft.border.only(bottom=ft.BorderSide(1, ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))),
-            border_radius=8,
-            expand=True,
-            on_click=self.toggle
-        )
+        self.player_name_text = ft.Text(player_data[1], color=ft.colors.PRIMARY if is_selected else None)
+        list_tile = ft.ListTile(title=self.player_name_text, leading=avatar_display)
+        self.content_container = ft.Container(content=list_tile, bgcolor=ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if is_selected else None, border=ft.border.only(bottom=ft.BorderSide(1, ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))), border_radius=8, expand=True, on_click=self.toggle)
         
         self.controls = [self.indicator_strip, self.content_container]
 
-    # --- ALTERAÇÃO 2: A função toggle agora atualiza a cor do texto ---
     def toggle(self, e):
         self.selected = not self.selected
         self.indicator_strip.bgcolor = ft.colors.PRIMARY if self.selected else None
         self.content_container.bgcolor = ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if self.selected else None
-        # --- Lógica para mudar a cor do texto ---
         self.player_name_text.color = ft.colors.PRIMARY if self.selected else None
         self.update()
 
@@ -81,11 +55,11 @@ def build_manage_players_view(state):
         final_member_ids = [item.player_id for item in all_checkbox_items if item.selected]
         try:
             update_players_in_list(state.active_list_id, final_member_ids)
-            state.page.snack_bar = ft.SnackBar(ft.Text("Lista atualizada com sucesso!"), bgcolor=ft.colors.GREEN_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "list_updated_success")), bgcolor=ft.colors.GREEN_700)
             state.page.snack_bar.open = True
             state.navigate_to("main")
         except Exception as ex:
-            state.page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao salvar: {ex}"), bgcolor=ft.colors.RED_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "save_error", error=ex)), bgcolor=ft.colors.RED_700)
             state.page.snack_bar.open = True
             state.update()
 
@@ -93,15 +67,15 @@ def build_manage_players_view(state):
 
     header = ft.Row(
         [
-            ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main"), tooltip="Voltar"),
+            ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main"), tooltip=get_string(state, "back_button_tooltip")),
             ft.Row(
                 [
-                    ft.Text("Gerenciando a Lista:", size=16),
+                    ft.Text(get_string(state, "manage_list_title"), size=16),
                     ft.Text(f'"{active_list_name}"', size=16, weight="bold", color=ft.colors.PRIMARY),
                     ft.IconButton(
                         icon=ft.icons.EDIT_OUTLINED,
                         on_click=lambda e: state.open_rename_list_dialog(e),
-                        tooltip="Renomear Lista",
+                        tooltip=get_string(state, "rename_list_tooltip"),
                         icon_size=20,
                     )
                 ],
@@ -121,7 +95,7 @@ def build_manage_players_view(state):
             ft.Divider(),
             players_checkbox_list,
             ft.Divider(),
-            ft.Row([ft.FilledButton("Salvar Alterações", icon=ft.icons.SAVE, on_click=save_changes, expand=True, height=50)], alignment=ft.MainAxisAlignment.CENTER)
+            ft.Row([ft.FilledButton(get_string(state, "save_changes_button"), icon=ft.icons.SAVE, on_click=save_changes, expand=True, height=50)], alignment=ft.MainAxisAlignment.CENTER)
         ],
         expand=True
     )

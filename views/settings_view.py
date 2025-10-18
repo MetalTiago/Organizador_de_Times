@@ -1,7 +1,6 @@
 # views/settings_view.py
 import flet as ft
 import csv
-# Importamos todas as funções de DB que vamos precisar
 from db_handler import (
     get_all_player_list_associations, 
     get_player_by_name, 
@@ -11,6 +10,7 @@ from db_handler import (
     create_list,
     add_player_to_list
 )
+from localization import get_string # --- 1. IMPORTE A FUNÇÃO ---
 
 def build_settings_view(state):
     """Constrói a view de Configurações."""
@@ -33,8 +33,8 @@ def build_settings_view(state):
     def export_data_click(e):
         export_file_picker.save_file(dialog_title="Salvar Arquivo de Listas e Jogadores", file_name="listas_de_jogadores.csv", allowed_extensions=["csv"])
 
-    # --- LÓGICA DE IMPORTAÇÃO COMPLETA ---
     def perform_import(file_path, mode):
+        # (Lógica de importação permanece a mesma por enquanto)
         added_players = 0; updated_players = 0; skipped_players = 0
         added_lists = 0;
         
@@ -42,7 +42,6 @@ def build_settings_view(state):
             with open(file_path, "r", encoding="utf-8-sig") as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=';')
                 
-                # Usamos dicionários para cachear os IDs e evitar buscas repetidas no DB
                 lists_cache = {}
                 players_cache = {}
 
@@ -52,8 +51,7 @@ def build_settings_view(state):
 
                     if not list_name or not player_name:
                         continue
-
-                    # 1. Processa a Lista
+                    
                     list_id = lists_cache.get(list_name)
                     if not list_id:
                         existing_list = get_list_by_name(list_name)
@@ -64,7 +62,6 @@ def build_settings_view(state):
                             added_lists += 1
                         lists_cache[list_name] = list_id
                     
-                    # 2. Processa o Jogador
                     player_id = players_cache.get(player_name)
                     if not player_id:
                         existing_player = get_player_by_name(player_name)
@@ -80,7 +77,6 @@ def build_settings_view(state):
                             added_players += 1
                         players_cache[player_name] = player_id
 
-                    # 3. Cria a Associação
                     if player_id and list_id:
                         add_player_to_list(list_id, player_id)
 
@@ -120,12 +116,27 @@ def build_settings_view(state):
 
     view = ft.Column(
         controls=[
-            ft.Row([ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main"), tooltip="Voltar"), ft.Text("Configurações", size=20, weight="bold", expand=True, text_align=ft.TextAlign.CENTER), ft.Container(width=40)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER),
+            # --- 2. SUBSTITUA OS TEXTOS FIXOS ---
+            ft.Row([
+                ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main"), tooltip=get_string(state, "back_button_tooltip")), 
+                ft.Text(get_string(state, "settings_title"), size=20, weight="bold", expand=True, text_align=ft.TextAlign.CENTER), 
+                ft.Container(width=40)
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER),
             ft.Divider(),
             ft.ListView(
                 controls=[
-                    ft.ListTile(leading=ft.Icon(ft.icons.UPLOAD_FILE_SHARP), title=ft.Text("Exportar Listas e Jogadores"), subtitle=ft.Text("Salva listas e jogadores em um arquivo CSV."), on_click=export_data_click),
-                    ft.ListTile(leading=ft.Icon(ft.icons.DOWNLOAD_SHARP), title=ft.Text("Importar Listas e Jogadores"), subtitle=ft.Text("Adiciona listas e jogadores de um arquivo CSV."), on_click=import_data_click),
+                    ft.ListTile(
+                        leading=ft.Icon(ft.icons.UPLOAD_FILE_SHARP), 
+                        title=ft.Text(get_string(state, "export_title")), 
+                        subtitle=ft.Text(get_string(state, "export_subtitle")), 
+                        on_click=export_data_click
+                    ),
+                    ft.ListTile(
+                        leading=ft.Icon(ft.icons.DOWNLOAD_SHARP), 
+                        title=ft.Text(get_string(state, "import_title")), 
+                        subtitle=ft.Text(get_string(state, "import_subtitle")), 
+                        on_click=import_data_click
+                    ),
                 ]
             )
         ],

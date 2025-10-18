@@ -3,25 +3,23 @@ import flet as ft
 from db_handler import get_players_by_list
 import base64
 import os
+from localization import get_string # Importa a função
 
 def build_selection_view(state):
     def update_selected_count():
-         state.selected_count_text.value = f"Jogadores selecionados: {len(state.selecionados)}"
+         state.selected_count_text.value = get_string(state, "selected_players_count", count=len(state.selecionados))
 
-    # --- ALTERAÇÃO 1: A função agora recebe o controle de texto do nome ---
     def toggle_selection(jogador, indicator, container, name_text):
         is_selected = any(s[0] == jogador[0] for s in state.selecionados)
         if is_selected:
             state.selecionados[:] = [s for s in state.selecionados if s[0] != jogador[0]]
             indicator.visible = False
             container.bgcolor = None
-            # --- Define a cor do texto para o padrão do tema ---
             name_text.color = None 
         else:
             state.selecionados.append(jogador)
             indicator.visible = True
             container.bgcolor = ft.colors.with_opacity(0.05, ft.colors.PRIMARY)
-            # --- Define a cor do texto para a cor primária do tema ---
             name_text.color = ft.colors.PRIMARY
             
         update_selected_count()
@@ -49,26 +47,10 @@ def build_selection_view(state):
                     avatar_display.content = ft.Image(src_base64=image_base64, fit=ft.ImageFit.COVER)
             
             indicator_strip = ft.Container(width=5, height=55, bgcolor=ft.colors.PRIMARY, border_radius=4, visible=is_selected)
-
-            # --- ALTERAÇÃO 2: Criamos o controle de texto aqui para poder passá-lo para a função ---
-            player_name_text = ft.Text(
-                jogador[1],
-                color=ft.colors.PRIMARY if is_selected else None # Garante que a cor inicial esteja correta
-            )
-            
+            player_name_text = ft.Text(jogador[1], color=ft.colors.PRIMARY if is_selected else None)
             list_tile = ft.ListTile(title=player_name_text, leading=avatar_display)
-            
-            content_container = ft.Container(
-                content=list_tile,
-                bgcolor=ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if is_selected else None,
-                border=ft.border.only(bottom=ft.BorderSide(1, ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))),
-                border_radius=8,
-                expand=True
-            )
-
-            # --- ALTERAÇÃO 3: Passamos o controle de texto (player_name_text) para a função de clique ---
+            content_container = ft.Container(content=list_tile, bgcolor=ft.colors.with_opacity(0.05, ft.colors.PRIMARY) if is_selected else None, border=ft.border.only(bottom=ft.BorderSide(1, ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))), border_radius=8, expand=True)
             list_tile.on_click = lambda e, j=jogador, i=indicator_strip, c=content_container, nt=player_name_text: toggle_selection(j, i, c, nt)
-
             state.checkbox_list.controls.append(ft.Row([indicator_strip, content_container], spacing=5, vertical_alignment=ft.CrossAxisAlignment.CENTER))
         
         update_selected_count()
@@ -80,15 +62,15 @@ def build_selection_view(state):
         state.update()
 
     def update_team_count_text(e):
-        state.team_count_text.value = f"{int(e.control.value)} Times"
+        state.team_count_text.value = get_string(state, "teams_count", count=int(e.control.value))
         state.update()
     state.team_count_slider.on_change = update_team_count_text
 
     view = ft.Column([
-        ft.Row([ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main")), ft.Text("Selecionar Jogadores", size=20, weight="bold", expand=True, text_align=ft.TextAlign.CENTER), state.theme_toggle_button], vertical_alignment=ft.CrossAxisAlignment.CENTER),
-        ft.Row([state.selected_count_text, ft.ElevatedButton("Limpar", on_click=clear_selection)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ft.Row([ft.IconButton(icon="arrow_back", on_click=lambda e: state.navigate_to("main")), ft.Text(get_string(state, "selection_title"), size=20, weight="bold", expand=True, text_align=ft.TextAlign.CENTER), state.theme_toggle_button], vertical_alignment=ft.CrossAxisAlignment.CENTER),
+        ft.Row([state.selected_count_text, ft.ElevatedButton(get_string(state, "clear_button"), on_click=clear_selection)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Divider(), state.checkbox_list, ft.Divider(),
-        ft.Column([state.team_count_text, state.team_count_slider, ft.ElevatedButton("Organizar Times", icon=ft.icons.GROUP, on_click=lambda e: state.navigate_to("results"), width=350, height=40)], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=10),
+        ft.Column([state.team_count_text, state.team_count_slider, ft.ElevatedButton(get_string(state, "organize_button_text"), icon=ft.icons.GROUP, on_click=lambda e: state.navigate_to("results"), width=350, height=40)], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=10),
     ], expand=True, spacing=5, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     
     return view

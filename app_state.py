@@ -6,8 +6,11 @@ class AppState:
     def __init__(self, page):
         self.page = page
         
+
+        self.current_language = "en_us"
         # --- AQUI ESTÁ A MUDANÇA ---
         # A lista ativa ao iniciar agora é a 0 ("Jogadores Cadastrados")
+
         self.active_list_id = 0
         
         # --- O resto do estado ---

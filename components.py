@@ -4,6 +4,7 @@ import os
 import shutil
 import base64
 from db_handler import get_players_by_list, delete_player, update_player, add_player_to_list, insert_player, get_all_players, get_all_lists
+from localization import get_string # --- 1. IMPORTE A FUNÇÃO ---
 
 state = None
 
@@ -11,7 +12,8 @@ def set_page_ref(_state):
     global state; state = _state
 
 def build_input_container(app_state):
-    name_input = ft.TextField(label="Nome", autofocus=True)
+    # --- 2. SUBSTITUA OS TEXTOS ---
+    name_input = ft.TextField(label=get_string(app_state, "player_name_label"), autofocus=True)
     skill_slider = ft.Slider(min=0, max=10, divisions=10, label="{value}", expand=True)
     img_preview = ft.Container(width=80, height=80, content=ft.Icon(ft.icons.PERSON, size=40), border_radius=40, bgcolor=ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))
     
@@ -48,14 +50,14 @@ def build_input_container(app_state):
 
     def save_user(e):
         if not name_input.value:
-            name_input.error_text = "O nome não pode estar vazio"
+            name_input.error_text = get_string(app_state, "name_cannot_be_empty_error")
             state.update()
             return
         
         selected_list_ids = [cb.data for cb in lists_checkbox_group.controls if cb.value]
         
         if not selected_list_ids:
-            state.page.snack_bar = ft.SnackBar(ft.Text("Selecione pelo menos uma lista!"), bgcolor=ft.colors.RED_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "select_at_least_one_list_error")), bgcolor=ft.colors.RED_700)
             state.page.snack_bar.open = True
             state.update()
             return
@@ -65,12 +67,12 @@ def build_input_container(app_state):
             for list_id in selected_list_ids:
                 add_player_to_list(list_id, player_id)
 
-            state.page.snack_bar = ft.SnackBar(ft.Text("Cadastrado com sucesso"), bgcolor=ft.colors.GREEN_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_saved_success")), bgcolor=ft.colors.GREEN_700)
             state.page.snack_bar.open = True
             atualizar_tabela(state)
             state.hide_form()
         except Exception as ex:
-            state.page.snack_bar = ft.SnackBar(ft.Text(f"Erro ao cadastrar: {ex}"), bgcolor=ft.colors.RED_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "generic_error", error=ex)), bgcolor=ft.colors.RED_700)
             state.page.snack_bar.open = True
             state.update()
     
@@ -81,14 +83,14 @@ def build_input_container(app_state):
         visible=False, elevation=10,
         content=ft.Container(padding=20, content=ft.Column(
             [
-                ft.Row([ft.Text("Novo Jogador", size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: state.hide_form())], alignment="spaceBetween"),
+                ft.Row([ft.Text(get_string(app_state, "new_player_title"), size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: state.hide_form())], alignment="spaceBetween"),
                 ft.Row([
-                    ft.Column([img_preview, ft.TextButton("Escolher Foto", icon=ft.icons.UPLOAD_FILE, on_click=lambda _: file_picker.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                    ft.Column([name_input, ft.Row([ft.Text("Skill:"), skill_text])], expand=True)
+                    ft.Column([img_preview, ft.TextButton(get_string(app_state, "choose_photo_button"), icon=ft.icons.UPLOAD_FILE, on_click=lambda _: file_picker.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    ft.Column([name_input, ft.Row([ft.Text(get_string(app_state, "skill_label")), skill_text])], expand=True)
                 ], alignment=ft.CrossAxisAlignment.START),
                 skill_slider,
                 ft.Divider(),
-                ft.Text("Adicionar às Listas:", weight="bold"),
+                ft.Text(get_string(app_state, "add_to_lists_label"), weight="bold"),
                 ft.Container(
                     content=lists_checkbox_group,
                     height=150,
@@ -96,7 +98,7 @@ def build_input_container(app_state):
                     border_radius=8,
                     padding=ft.padding.symmetric(horizontal=10)
                 ),
-                ft.Container(content=ft.FilledButton("Salvar Jogador", on_click=save_user, icon=ft.icons.SAVE), alignment=ft.alignment.center, padding=10)
+                ft.Container(content=ft.FilledButton(get_string(app_state, "save_player_button"), on_click=save_user, icon=ft.icons.SAVE), alignment=ft.alignment.center, padding=10)
             ],
             scroll=ft.ScrollMode.ADAPTIVE
         ))
@@ -105,7 +107,7 @@ def build_input_container(app_state):
 
 
 def build_edit_container(app_state):
-    name_edit = ft.TextField(label="Nome")
+    name_edit = ft.TextField(label=get_string(app_state, "player_name_label"))
     skill_edit = ft.Slider(min=0, max=10, divisions=10, label="{value}", expand=True)
     img_preview_edit = ft.Container(width=80, height=80, content=ft.Icon(ft.icons.PERSON, size=40), border_radius=40, bgcolor=ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))
     id_edit = ft.Text()
@@ -134,7 +136,7 @@ def build_edit_container(app_state):
         update_player(int(id_edit.value), name_edit.value, int(skill_edit.value), img_preview_edit.data)
         hide_edit_form()
         atualizar_tabela(app_state)
-        app_state.page.snack_bar = ft.SnackBar(ft.Text("Jogador atualizado!"), bgcolor=ft.colors.GREEN_700)
+        app_state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_updated_success")), bgcolor=ft.colors.GREEN_700)
         app_state.page.snack_bar.open = True
         app_state.update()
 
@@ -143,16 +145,16 @@ def build_edit_container(app_state):
     edit_container = ft.Card(
         visible=False, elevation=10,
         content=ft.Container(padding=20, content=ft.Column([
-            ft.Row([ft.Text("Editar Jogador", size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: hide_edit_form())], alignment="spaceBetween"),
+            ft.Row([ft.Text(get_string(app_state, "edit_player_title"), size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: hide_edit_form())], alignment="spaceBetween"),
             ft.Row([
-                ft.Column([img_preview_edit, ft.TextButton("Mudar Foto", icon=ft.icons.UPLOAD_FILE, on_click=lambda _: file_picker_edit.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                ft.Column([name_edit, ft.Row([ft.Text("Skill:"), skill_text_edit])], expand=True)
+                ft.Column([img_preview_edit, ft.TextButton(get_string(app_state, "change_photo_button"), icon=ft.icons.UPLOAD_FILE, on_click=lambda _: file_picker_edit.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                ft.Column([name_edit, ft.Row([ft.Text(get_string(app_state, "skill_label")), skill_text_edit])], expand=True)
             ], alignment=ft.CrossAxisAlignment.START),
             skill_edit,
-            ft.Container(content=ft.FilledButton("Atualizar", on_click=update_and_save_user, icon=ft.icons.SAVE), alignment=ft.alignment.center, padding=10)
+            ft.Container(content=ft.FilledButton(get_string(app_state, "update_button"), on_click=update_and_save_user, icon=ft.icons.SAVE), alignment=ft.alignment.center, padding=10)
         ], scroll=ft.ScrollMode.ADAPTIVE))
     )
-    
+    # ... (o resto do arquivo components.py continua o mesmo)
     def show_edit_form(user_data):
         id_edit.value = str(user_data["id"])
         name_edit.value = user_data["name"]
@@ -195,7 +197,6 @@ def atualizar_tabela(app_state, apply_filters=False):
         users = [user for user in users if name_filter in user[1].lower()]
         
     if not users:
-        # --- ALTERAÇÃO AQUI ---
         is_all_players_view = (list_id == 0)
         
         empty_state_component = ft.Container(
@@ -209,12 +210,11 @@ def atualizar_tabela(app_state, apply_filters=False):
                         color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
                         text_align=ft.TextAlign.CENTER
                     ),
-                    # Adiciona a segunda instrução apenas se não estivermos na visão "Todos os Jogadores"
                     ft.Text(
                         "Ou use o menu (⋮) e 'Gerenciar Jogadores' para adicionar jogadores já existentes a esta lista.",
                         size=14,
                         color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
-                        visible=not is_all_players_view, # A instrução só aparece em listas específicas
+                        visible=not is_all_players_view,
                         text_align=ft.TextAlign.CENTER
                     ),
                 ],
@@ -225,7 +225,6 @@ def atualizar_tabela(app_state, apply_filters=False):
             padding=ft.padding.symmetric(vertical=50, horizontal=10),
             alignment=ft.alignment.center
         )
-        # --- FIM DA ALTERAÇÃO ---
         app_state.lista_jogadores.controls.append(empty_state_component)
     else:
         for user in users:
