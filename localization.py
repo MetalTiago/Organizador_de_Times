@@ -1,10 +1,17 @@
 # localization.py
 
+# Dicionário para nomes de cores, para serem usados na tela de resultados
+TEAM_COLORS = {
+    "pt_br": ["Vermelho", "Azul", "Verde", "Amarelo", "Roxo", "Laranja", "Ciano", "Rosa", "Verde Limão", "Índigo"],
+    "en_us": ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Cyan", "Pink", "Lime Green", "Indigo"],
+    "es": ["Rojo", "Azul", "Verde", "Amarillo", "Morado", "Naranja", "Cian", "Rosa", "Verde Lima", "Índigo"],
+}
+
 STRINGS = {
     "pt_br": {
-        # Main View
+        # Main View & Menus
         "app_title": "Organizador de Times",
-        "toggle_theme_tooltip": "Alternar Tema",
+        "toggle_theme_tooltip": "Alternar Tema", # Corrigido/Adicionado
         "settings_tooltip": "Configurações",
         "select_list_label": "Selecione a Lista:",
         "organize_button_text": "Organizar Times",
@@ -16,6 +23,17 @@ STRINGS = {
         "rename_list_menu": "Renomear lista atual",
         "manage_players_menu": "Gerenciar Jogadores",
         "delete_list_menu": "Excluir lista atual",
+
+        "# Language Selection": "",
+        "language_selection_label": "Idioma do Aplicativo:",
+        "language_pt_br": "Português (Brasil)",
+        "language_en_us": "Inglês (EUA)",
+        "language_es": "Espanhol",
+
+        "export_success": "Listas e jogadores exportados com sucesso!",
+        "export_error": "Erro ao exportar arquivo: {error}",
+        "import_summary": "Importação: {added_players} jogadores e {added_lists} listas criados. {updated_players} jogadores atualizados, {skipped_players} ignorados.",
+        "import_error": "Erro ao importar arquivo: {error}",
 
         # Components (Formulários & Diálogos)
         "player_name_label": "Nome",
@@ -32,11 +50,28 @@ STRINGS = {
         "add_to_lists_label": "Adicionar às Listas:",
         "save_player_button": "Salvar Jogador",
         "update_button": "Atualizar",
-        "delete_confirmation_title": "Confirmação de Exclusão",
-        "delete_confirmation_content": "Tem certeza que deseja excluir este jogador?",
-        "yes_button": "Sim",
-        "no_button": "Não",
-        "player_deleted_success": "Jogador excluído!",
+        "delete_confirmation_title": "Confirmação de Exclusão", # Adicionado
+        "delete_player_confirmation_content": "Tem certeza que deseja excluir este jogador?", # Adicionado
+        "delete_list_confirmation_content": "Tem certeza que deseja apagar a lista '{list_name}'?", # Adicionado
+        "yes_button": "Sim", # Adicionado
+        "no_button": "Não", # Adicionado
+        "cancel_button": "Cancelar", # Adicionado
+        "save_button": "Salvar", # Adicionado
+        "player_deleted_success": "Jogador excluído!", # Adicionado
+        "edit_tooltip": "Editar", # Adicionado
+        "delete_tooltip": "Excluir", # Adicionado
+        "empty_state_title": "Nenhum jogador por aqui...",
+        "empty_state_subtitle1": "Clique em 'Cadastrar Jogador' para adicionar o primeiro!",
+        "empty_state_subtitle2": "Ou use o menu (⋮) e 'Gerenciar Jogadores' para adicionar jogadores já existentes a esta lista.",
+
+        # Dialogs
+        "create_list_dialog_title": "Criar Nova Lista", # Adicionado
+        "new_list_name_label": "Nome da Nova Lista", # Adicionado
+        "list_already_exists_error": "Esta lista já existe.", # Adicionado
+        "rename_list_dialog_title": "Renomear Lista", # Adicionado
+        "new_list_name_label_edit": "Novo nome da lista", # Adicionado
+        "list_renamed_success": "Lista renomeada com sucesso!", # Adicionado
+        "cannot_delete_last_list_error": "Não é possível apagar a última lista.", # Adicionado
 
         # Settings View
         "settings_title": "Configurações",
@@ -45,6 +80,13 @@ STRINGS = {
         "export_subtitle": "Salva listas e jogadores em um arquivo CSV.",
         "import_title": "Importar Listas e Jogadores",
         "import_subtitle": "Adiciona listas e jogadores de um arquivo CSV.",
+        "save_file_dialog_title": "Salvar Arquivo de Listas e Jogadores", # Adicionado
+        "open_file_dialog_title": "Abrir Arquivo de Listas e Jogadores", # Adicionado
+        "import_dialog_title": "Modo de Importação", # Adicionado
+        "import_dialog_content": "O que fazer com jogadores do arquivo que já existem no app?", # Adicionado
+        "import_mode_ignore": "Ignorar", # Adicionado
+        "import_mode_overwrite": "Sobrescrever", # Adicionado
+        "continue_import_button": "Continuar Importação", # Adicionado
 
         # Selection View
         "selection_title": "Selecionar Jogadores",
@@ -60,22 +102,15 @@ STRINGS = {
         "organizing_dialog_title": "Organizando...",
         "generate_teams_first_error": "Gere os times primeiro!",
         "all_teams_copied_success": "Times copiados!",
-        "team_copied_success": "Time {team_name} copiado!",
-        "total_skill_label": "Total Skill:",
+        "team_copied_success": "{team_name} copiado!",
+        "total_skill_label": "Total Skill:", # Corrigido/Adicionado
         "copy_button_tooltip": "Copiar {team_name}",
-        "team_name_prefix": "Time {color_name}",
-
-        # Manage Players View
-        "manage_list_title": "Gerenciando a Lista:",
-        "rename_list_tooltip": "Renomear Lista",
-        "save_changes_button": "Salvar Alterações",
-        "list_updated_success": "Lista atualizada com sucesso!",
-        "save_error": "Erro ao salvar: {error}",
+        "team_name_prefix": "Time {color_name}", # Usaremos com get_team_color_name
     },
     "en_us": {
-        # Main View
+        # Main View & Menus
         "app_title": "Team Organizer",
-        "toggle_theme_tooltip": "Toggle Theme",
+        "toggle_theme_tooltip": "Toggle Theme", # Corrigido/Adicionado
         "settings_tooltip": "Settings",
         "select_list_label": "Select a List:",
         "organize_button_text": "Organize Teams",
@@ -87,6 +122,17 @@ STRINGS = {
         "rename_list_menu": "Rename current list",
         "manage_players_menu": "Manage Players",
         "delete_list_menu": "Delete current list",
+
+        "# Language Selection": "",
+        "language_selection_label": "App Language:",
+        "language_pt_br": "Portuguese (Brazil)",
+        "language_en_us": "English (US)",
+        "language_es": "Spanish",
+
+        "export_success": "Lists and players exported successfully!",
+        "export_error": "Error exporting file: {error}",
+        "import_summary": "Import: {added_players} players and {added_lists} lists created. {updated_players} players updated, {skipped_players} skipped.",
+        "import_error": "Error importing file: {error}",
 
         # Components (Forms & Dialogs)
         "player_name_label": "Name",
@@ -103,12 +149,29 @@ STRINGS = {
         "add_to_lists_label": "Add to Lists:",
         "save_player_button": "Save Player",
         "update_button": "Update",
-        "delete_confirmation_title": "Delete Confirmation",
-        "delete_confirmation_content": "Are you sure you want to delete this player?",
-        "yes_button": "Yes",
-        "no_button": "No",
-        "player_deleted_success": "Player deleted!",
+        "delete_confirmation_title": "Delete Confirmation", # Adicionado
+        "delete_player_confirmation_content": "Are you sure you want to delete this player?", # Adicionado
+        "delete_list_confirmation_content": "Are you sure you want to delete the list '{list_name}'?", # Adicionado
+        "yes_button": "Yes", # Adicionado
+        "no_button": "No", # Adicionado
+        "cancel_button": "Cancel", # Adicionado
+        "save_button": "Save", # Adicionado
+        "player_deleted_success": "Player deleted!", # Adicionado
+        "edit_tooltip": "Edit", # Adicionado
+        "delete_tooltip": "Delete", # Adicionado
+        "empty_state_title": "No players around here...",
+        "empty_state_subtitle1": "Click 'Register Player' to add the first one!",
+        "empty_state_subtitle2": "Or use the (⋮) menu and 'Manage Players' to add existing players to this list.",
 
+        # Dialogs
+        "create_list_dialog_title": "Create New List", # Adicionado
+        "new_list_name_label": "New List Name", # Adicionado
+        "list_already_exists_error": "This list already exists.", # Adicionado
+        "rename_list_dialog_title": "Rename List", # Adicionado
+        "new_list_name_label_edit": "New list name", # Adicionado
+        "list_renamed_success": "List renamed successfully!", # Adicionado
+        "cannot_delete_last_list_error": "Cannot delete the last list.", # Adicionado
+        
         # Settings View
         "settings_title": "Settings",
         "back_button_tooltip": "Back",
@@ -116,7 +179,14 @@ STRINGS = {
         "export_subtitle": "Saves lists and players to a CSV file.",
         "import_title": "Import Lists and Players",
         "import_subtitle": "Adds lists and players from a CSV file.",
-        
+        "save_file_dialog_title": "Save Lists and Players File", # Adicionado
+        "open_file_dialog_title": "Open Lists and Players File", # Adicionado
+        "import_dialog_title": "Import Mode", # Adicionado
+        "import_dialog_content": "What to do with players from the file that already exist in the app?", # Adicionado
+        "import_mode_ignore": "Ignore", # Adicionado
+        "import_mode_overwrite": "Overwrite", # Adicionado
+        "continue_import_button": "Continue Import", # Adicionado
+
         # Selection View
         "selection_title": "Select Players",
         "selected_players_count": "Players selected: {count}",
@@ -131,10 +201,10 @@ STRINGS = {
         "organizing_dialog_title": "Organizing...",
         "generate_teams_first_error": "Generate the teams first!",
         "all_teams_copied_success": "Teams copied!",
-        "team_copied_success": "Team {team_name} copied!",
-        "total_skill_label": "Total Skill:",
+        "team_copied_success": "{team_name} copied!",
+        "total_skill_label": "Total Skill:", # Corrigido/Adicionado
         "copy_button_tooltip": "Copy {team_name}",
-        "team_name_prefix": "Team {color_name}",
+        "team_name_prefix": "Team {color_name}", # Usaremos com get_team_color_name
 
         # Manage Players View
         "manage_list_title": "Managing List:",
@@ -144,9 +214,9 @@ STRINGS = {
         "save_error": "Error while saving: {error}",
     },
     "es": {
-        # Main View
+        # Main View & Menus
         "app_title": "Organizador de Equipos",
-        "toggle_theme_tooltip": "Cambiar Tema",
+        "toggle_theme_tooltip": "Cambiar Tema", # Corrigido/Adicionado
         "settings_tooltip": "Configuración",
         "select_list_label": "Selecciona la Lista:",
         "organize_button_text": "Organizar Equipos",
@@ -158,6 +228,17 @@ STRINGS = {
         "rename_list_menu": "Renombrar lista actual",
         "manage_players_menu": "Gestionar Jugadores",
         "delete_list_menu": "Eliminar lista actual",
+
+        "# Language Selection": "",
+        "language_selection_label": "Idioma de la Aplicación:",
+        "language_pt_br": "Portugués (Brasil)",
+        "language_en_us": "Inglés (EE.UU.)",
+        "language_es": "Español",
+
+        "export_success": "¡Listas y jugadores exportados con éxito!",
+        "export_error": "Error al exportar archivo: {error}",
+        "import_summary": "Importación: {added_players} jugadores y {added_lists} listas creados. {updated_players} jugadores actualizados, {skipped_players} ignorados.",
+        "import_error": "Error al importar archivo: {error}",
 
         # Components (Forms & Dialogs)
         "player_name_label": "Nombre",
@@ -174,11 +255,28 @@ STRINGS = {
         "add_to_lists_label": "Añadir a Listas:",
         "save_player_button": "Guardar Jugador",
         "update_button": "Actualizar",
-        "delete_confirmation_title": "Confirmar Eliminación",
-        "delete_confirmation_content": "¿Estás seguro de que quieres eliminar a este jugador?",
-        "yes_button": "Sí",
-        "no_button": "No",
-        "player_deleted_success": "¡Jugador eliminado!",
+        "delete_confirmation_title": "Confirmar Eliminación", # Adicionado
+        "delete_player_confirmation_content": "¿Estás seguro de que quieres eliminar a este jugador?", # Adicionado
+        "delete_list_confirmation_content": "¿Estás seguro de que quieres borrar la lista '{list_name}'?", # Adicionado
+        "yes_button": "Sí", # Adicionado
+        "no_button": "No", # Adicionado
+        "cancel_button": "Cancelar", # Adicionado
+        "save_button": "Guardar", # Adicionado
+        "player_deleted_success": "¡Jugador eliminado!", # Adicionado
+        "edit_tooltip": "Editar", # Adicionado
+        "delete_tooltip": "Eliminar", # Adicionado
+        "empty_state_title": "No hay jugadores por aquí...",
+        "empty_state_subtitle1": "¡Haz clic en 'Registrar Jugador' para añadir el primero!",
+        "empty_state_subtitle2": "O usa el menú (⋮) y 'Gestionar Jugadores' para añadir jugadores existentes a esta lista.",
+
+        # Dialogs
+        "create_list_dialog_title": "Crear Nueva Lista", # Adicionado
+        "new_list_name_label": "Nombre de la Nueva Lista", # Adicionado
+        "list_already_exists_error": "Esta lista ya existe.", # Adicionado
+        "rename_list_dialog_title": "Renombrar Lista", # Adicionado
+        "new_list_name_label_edit": "Nuevo nombre de la lista", # Adicionado
+        "list_renamed_success": "¡Lista renombrada con éxito!", # Adicionado
+        "cannot_delete_last_list_error": "No se puede borrar la última lista.", # Adicionado
         
         # Settings View
         "settings_title": "Configuración",
@@ -187,6 +285,13 @@ STRINGS = {
         "export_subtitle": "Guarda listas y jugadores en un archivo CSV.",
         "import_title": "Importar Listas y Jugadores",
         "import_subtitle": "Añade listas y jugadores desde un archivo CSV.",
+        "save_file_dialog_title": "Guardar Archivo de Listas y Jugadores", # Adicionado
+        "open_file_dialog_title": "Abrir Archivo de Listas y Jugadores", # Adicionado
+        "import_dialog_title": "Modo de Importación", # Adicionado
+        "import_dialog_content": "¿Qué hacer con los jugadores del archivo que ya existen en la aplicación?", # Adicionado
+        "import_mode_ignore": "Ignorar", # Adicionado
+        "import_mode_overwrite": "Sobrescribir", # Adicionado
+        "continue_import_button": "Continuar Importación", # Adicionado
         
         # Selection View
         "selection_title": "Seleccionar Jugadores",
@@ -203,9 +308,9 @@ STRINGS = {
         "generate_teams_first_error": "¡Genera los equipos primero!",
         "all_teams_copied_success": "¡Equipos copiados!",
         "team_copied_success": "¡Equipo {team_name} copiado!",
-        "total_skill_label": "Habilidad Total:",
+        "total_skill_label": "Habilidad Total:", # Corrigido/Adicionado
         "copy_button_tooltip": "Copiar {team_name}",
-        "team_name_prefix": "Equipo {color_name}",
+        "team_name_prefix": "Equipo {color_name}", # Usaremos com get_team_color_name
 
         # Manage Players View
         "manage_list_title": "Gestionando la Lista:",
@@ -221,3 +326,9 @@ def get_string(state, key, **kwargs):
     language_dict = STRINGS.get(state.current_language, STRINGS["en_us"])
     base_string = language_dict.get(key, STRINGS["en_us"].get(key, f"_{key}_"))
     return base_string.format(**kwargs)
+
+def get_team_color_name(state, index):
+    """Retorna o nome da cor do time no idioma atual."""
+    color_names = TEAM_COLORS.get(state.current_language, TEAM_COLORS["en_us"])
+    # Pega a cor correta, fazendo o índice "dar a volta" se necessário
+    return color_names[index % len(color_names)]

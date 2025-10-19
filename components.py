@@ -4,7 +4,7 @@ import os
 import shutil
 import base64
 from db_handler import get_players_by_list, delete_player, update_player, add_player_to_list, insert_player, get_all_players, get_all_lists
-from localization import get_string # --- 1. IMPORTE A FUNÇÃO ---
+from localization import get_string 
 
 state = None
 
@@ -12,7 +12,6 @@ def set_page_ref(_state):
     global state; state = _state
 
 def build_input_container(app_state):
-    # --- 2. SUBSTITUA OS TEXTOS ---
     name_input = ft.TextField(label=get_string(app_state, "player_name_label"), autofocus=True)
     skill_slider = ft.Slider(min=0, max=10, divisions=10, label="{value}", expand=True)
     img_preview = ft.Container(width=80, height=80, content=ft.Icon(ft.icons.PERSON, size=40), border_radius=40, bgcolor=ft.colors.with_opacity(0.1, ft.colors.ON_SURFACE))
@@ -29,6 +28,7 @@ def build_input_container(app_state):
         img_preview.data = None
         
         for list_id, list_name in all_lists:
+            # Não traduzir nomes de lista criados pelo usuário
             is_checked = (list_id == app_state.active_list_id and app_state.active_list_id != 0)
             lists_checkbox_group.controls.append(ft.Checkbox(label=list_name, value=is_checked, data=list_id))
         
@@ -154,7 +154,7 @@ def build_edit_container(app_state):
             ft.Container(content=ft.FilledButton(get_string(app_state, "update_button"), on_click=update_and_save_user, icon=ft.icons.SAVE), alignment=ft.alignment.center, padding=10)
         ], scroll=ft.ScrollMode.ADAPTIVE))
     )
-    # ... (o resto do arquivo components.py continua o mesmo)
+    
     def show_edit_form(user_data):
         id_edit.value = str(user_data["id"])
         name_edit.value = user_data["name"]
@@ -198,25 +198,13 @@ def atualizar_tabela(app_state, apply_filters=False):
         
     if not users:
         is_all_players_view = (list_id == 0)
-        
         empty_state_component = ft.Container(
             content=ft.Column(
                 [
                     ft.Icon(ft.icons.SPORTS_SOCCER_OUTLINED, size=60, color=ft.colors.with_opacity(0.4, ft.colors.ON_SURFACE)),
-                    ft.Text("Nenhum jogador por aqui...", size=18, weight="bold"),
-                    ft.Text(
-                        "Clique em 'Cadastrar Jogador' para adicionar o primeiro!",
-                        size=14,
-                        color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
-                        text_align=ft.TextAlign.CENTER
-                    ),
-                    ft.Text(
-                        "Ou use o menu (⋮) e 'Gerenciar Jogadores' para adicionar jogadores já existentes a esta lista.",
-                        size=14,
-                        color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE),
-                        visible=not is_all_players_view,
-                        text_align=ft.TextAlign.CENTER
-                    ),
+                    ft.Text(get_string(app_state, "empty_state_title"), size=18, weight="bold"),
+                    ft.Text(get_string(app_state, "empty_state_subtitle1"), size=14, color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE), text_align=ft.TextAlign.CENTER),
+                    ft.Text(get_string(app_state, "empty_state_subtitle2"), size=14, color=ft.colors.with_opacity(0.8, ft.colors.ON_SURFACE), visible=not is_all_players_view, text_align=ft.TextAlign.CENTER),
                 ],
                 spacing=10,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -229,10 +217,7 @@ def atualizar_tabela(app_state, apply_filters=False):
     else:
         for user in users:
             user_dict = {"id": user[0], "name": user[1], "skill": user[2], "photo_path": user[3]}
-            avatar_display = ft.Container(
-                width=40, height=40, content=ft.Icon(ft.icons.PERSON_OUTLINE),
-                border_radius=20, bgcolor=cor_skill(user_dict["skill"])
-            )
+            avatar_display = ft.Container(width=40, height=40, content=ft.Icon(ft.icons.PERSON_OUTLINE), border_radius=20, bgcolor=cor_skill(user_dict["skill"]))
             if user_dict["photo_path"]:
                 try:
                     with open(os.path.join("assets", user_dict["photo_path"]), "rb") as f:
@@ -246,11 +231,11 @@ def atualizar_tabela(app_state, apply_filters=False):
                         avatar_display,
                         ft.Column([
                             ft.Text(user_dict["name"], weight="bold"),
-                            ft.Text(f"Skill: {user_dict['skill']}", color=cor_skill(user_dict["skill"]))
+                            ft.Text(f"{get_string(state, 'skill_label')} {user_dict['skill']}", color=cor_skill(user_dict["skill"]))
                         ], spacing=2, alignment=ft.MainAxisAlignment.CENTER, expand=True),
                         ft.Row([
-                            ft.IconButton(icon=ft.icons.EDIT, icon_color=ft.colors.BLUE_400, data=user_dict, on_click=lambda e: state.show_edit_form(e.control.data), tooltip="Editar"),
-                            ft.IconButton(icon=ft.icons.DELETE, icon_color=ft.colors.RED_400, data=user_dict["id"], on_click=lambda e: showdelete_confirm(e.control.data), tooltip="Excluir")
+                            ft.IconButton(icon=ft.icons.EDIT, icon_color=ft.colors.BLUE_400, data=user_dict, on_click=lambda e: state.show_edit_form(e.control.data), tooltip=get_string(state, "edit_tooltip")),
+                            ft.IconButton(icon=ft.icons.DELETE, icon_color=ft.colors.RED_400, data=user_dict["id"], on_click=lambda e: showdelete_confirm(e.control.data), tooltip=get_string(state, "delete_tooltip"))
                         ])
                     ],
                     vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -273,18 +258,31 @@ def cor_skill(n):
     elif n >= 9: return ft.colors.LIGHT_BLUE_ACCENT_400
     return ft.colors.ON_SURFACE
 
-confirm_delete_dialog = ft.AlertDialog(modal=True, title=ft.Text("Confirmação de Exclusão"), content=ft.Text("Tem certeza que deseja excluir este jogador?"))
+confirm_delete_dialog = ft.AlertDialog(
+    modal=True, 
+    title=ft.Text(""), # Título traduzido dinamicamente
+    content=ft.Text("") # Conteúdo traduzido dinamicamente
+)
+
 def showdelete_confirm(player_id):
     def confirm_action(e):
         confirm_delete_dialog.open = False
-        if e.control.text == "Sim":
+        # Verifica o texto do botão clicado (agora traduzido)
+        if e.control.text == get_string(state, "yes_button"): 
             delete_player(player_id)
             atualizar_tabela(state)
-            state.page.snack_bar = ft.SnackBar(ft.Text("Jogador excluído!"), bgcolor=ft.colors.GREEN_700)
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "player_deleted_success")), bgcolor=ft.colors.GREEN_700)
             state.page.snack_bar.open = True
         state.update()
     
-    confirm_delete_dialog.actions = [ft.TextButton("Sim", on_click=confirm_action, style=ft.ButtonStyle(color=ft.colors.RED)), ft.TextButton("Não", on_click=confirm_action)]
+    # Atualiza título e conteúdo com base no idioma
+    confirm_delete_dialog.title.value = get_string(state, "delete_confirmation_title")
+    confirm_delete_dialog.content.value = get_string(state, "delete_player_confirmation_content")
+    # Atualiza botões com base no idioma
+    confirm_delete_dialog.actions = [
+        ft.TextButton(get_string(state, "yes_button"), on_click=confirm_action, style=ft.ButtonStyle(color=ft.colors.RED)), 
+        ft.TextButton(get_string(state, "no_button"), on_click=confirm_action)
+    ]
     state.page.dialog = confirm_delete_dialog
     confirm_delete_dialog.open = True
     state.update()
