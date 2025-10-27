@@ -30,6 +30,14 @@ STRINGS = {
         "sharing_pro_feature_message": "Compartilhar times é uma funcionalidade exclusiva da versão Pro.",
         "import_export_pro_feature_message": "Importar e Exportar dados é uma funcionalidade exclusiva da versão Pro.",
         "upgrade_button": "Atualizar para Pro",
+        # Legal Screens Links (Settings View)
+        "privacy_policy_link_title": "Política de Privacidade",
+        "terms_of_use_link_title": "Termos de Uso",
+        # Legal Screens Titles & Content
+        "# Legal Screens": "",
+        "privacy_policy_title": "Política de Privacidade",
+        "terms_of_use_title": "Termos de Uso",
+        "legal_content_placeholder": "[Conteúdo a ser adicionado aqui...]",
         # Selection View
         "selection_title": "Selecionar Jogadores", "selected_players_count": "Jogadores selecionados: {count}", "clear_button": "Limpar", "teams_count": "{count} Times",
         # Results View
@@ -60,6 +68,14 @@ STRINGS = {
         "sharing_pro_feature_message": "Sharing teams is a Pro feature.",
         "import_export_pro_feature_message": "Importing and Exporting data is a Pro feature.",
         "upgrade_button": "Upgrade to Pro",
+        # Legal Screens Links (Settings View)
+        "privacy_policy_link_title": "Privacy Policy",
+        "terms_of_use_link_title": "Terms of Use",
+        # Legal Screens Titles & Content
+        "# Legal Screens": "",
+        "privacy_policy_title": "Privacy Policy",
+        "terms_of_use_title": "Terms of Use",
+        "legal_content_placeholder": "[Content to be added here...]",
         # Selection View
         "selection_title": "Select Players", "selected_players_count": "Players selected: {count}", "clear_button": "Clear", "teams_count": "{count} Teams",
         # Results View
@@ -90,6 +106,14 @@ STRINGS = {
         "sharing_pro_feature_message": "Compartir equipos es una función exclusiva de la versión Pro.",
         "import_export_pro_feature_message": "Importar y Exportar datos es una función exclusiva de la versión Pro.",
         "upgrade_button": "Actualizar a Pro",
+        # Legal Screens Links (Settings View)
+        "privacy_policy_link_title": "Política de Privacidad",
+        "terms_of_use_link_title": "Términos de Uso",
+        # Legal Screens Titles & Content
+        "# Legal Screens": "",
+        "privacy_policy_title": "Política de Privacidad",
+        "terms_of_use_title": "Términos de Uso",
+        "legal_content_placeholder": "[Contenido que se añadirá aquí...]",
         # Selection View
         "selection_title": "Seleccionar Jugadores", "selected_players_count": "Jugadores seleccionados: {count}", "clear_button": "Limpiar", "teams_count": "{count} Equipos",
         # Results View
