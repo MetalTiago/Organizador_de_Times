@@ -1,21 +1,54 @@
 # views/privacy_policy_view.py
 import flet as ft
 from localization import get_string
+import os # Importa o módulo os
 
 def build_privacy_policy_view(state):
     """Constrói a view da Política de Privacidade."""
 
-    # Conteúdo de exemplo (pode usar ft.Markdown se preferir formatar)
+    def load_policy_content(lang_code):
+        """Carrega o conteúdo do ficheiro markdown com base no idioma."""
+        # Define o nome do ficheiro com base no idioma
+        filename_map = {
+            "pt_br": "privacy_policy_pt.md",
+            "es": "privacy_policy_es.md",
+            "en_us": "privacy_policy_en.md" # Padrão
+        }
+        # Escolhe o ficheiro ou usa 'en_us' como fallback
+        filename = filename_map.get(lang_code, filename_map["en_us"])
+        
+        filepath = os.path.join("assets", filename)
+        
+        try:
+            # Tenta ler o conteúdo do ficheiro
+            with open(filepath, "r", encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"AVISO: Ficheiro de política de privacidade não encontrado: {filepath}")
+            return f"Erro: Ficheiro '{filename}' não encontrado."
+        except Exception as e:
+            print(f"Erro ao ler ficheiro de política: {e}")
+            return f"Erro ao carregar conteúdo: {e}"
+
+    # Carrega o conteúdo apropriado
+    policy_text = load_policy_content(state.current_language)
+
+    # --- CORREÇÃO DO BUG 'scroll' ---
+    # Coloca o Markdown dentro de uma Coluna rolável
     content = ft.Column(
         [
-            ft.Text(get_string(state, "legal_content_placeholder"), selectable=True),
-            # Adicione mais ft.Text ou outros controlos aqui conforme necessário
-            # Ex: ft.Text("Seção 1: Informações Coletadas"), ft.Text("...")
+            ft.Markdown(
+                policy_text,
+                selectable=True,
+                auto_follow_links=True # Permite que links (como o email) sejam clicáveis
+                # REMOVIDO: scroll=ft.ScrollMode.ADAPTIVE
+            )
         ],
-        scroll=ft.ScrollMode.ADAPTIVE, # Usa ADAPTIVE para melhor rolagem
+        scroll=ft.ScrollMode.ADAPTIVE, # Adiciona scroll à Coluna
         expand=True,
         spacing=10
     )
+    # --- FIM DA CORREÇÃO ---
 
     view = ft.Column(
         controls=[
@@ -37,9 +70,9 @@ def build_privacy_policy_view(state):
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
             ),
             ft.Divider(),
-            # Container para o conteúdo rolável
+            # Container para o conteúdo Markdown rolável
             ft.Container(
-                content=content,
+                content=content, # Adiciona a Coluna rolável
                 expand=True,
                 padding=ft.padding.symmetric(horizontal=15)
             )

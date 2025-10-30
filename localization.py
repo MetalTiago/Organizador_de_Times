@@ -24,7 +24,7 @@ STRINGS = {
         "player_limit_reached_message": "A versão gratuita permite cadastrar até {limit} jogadores. Atualize para Pro para jogadores ilimitados!",
         "team_limit_reached_message": "A versão gratuita permite organizar até {limit} times. Atualize para Pro para mais times!",
         "daily_organization_limit_reached_title": "Limite de Organizações Atingido",
-        "daily_organization_limit_reached_message": "Organizações/Reorganizações adicionais requerem a Versão Pro. Atualize para uso ilimitado!", # Ajustado
+        "daily_organization_limit_reached_message": "Organizações/Reorganizações adicionais requerem a Versão Pro. Atualize para uso ilimitado!",
         # "watch_ad_button": "Assistir Anúncio", # REMOVIDO
         "feature_for_pro_title": "Funcionalidade Pro",
         "sharing_pro_feature_message": "Compartilhar times é uma funcionalidade exclusiva da versão Pro.",
@@ -37,7 +37,7 @@ STRINGS = {
         "# Legal Screens": "",
         "privacy_policy_title": "Política de Privacidade",
         "terms_of_use_title": "Termos de Uso",
-        "legal_content_placeholder": "[Conteúdo a ser adicionado aqui...]",
+        # "legal_content_placeholder": "[Conteúdo a ser adicionado aqui...]", # REMOVIDO
         # Selection View
         "selection_title": "Selecionar Jogadores", "selected_players_count": "Jogadores selecionados: {count}", "clear_button": "Limpar", "teams_count": "{count} Times",
         # Results View
@@ -75,7 +75,7 @@ STRINGS = {
         "# Legal Screens": "",
         "privacy_policy_title": "Privacy Policy",
         "terms_of_use_title": "Terms of Use",
-        "legal_content_placeholder": "[Content to be added here...]",
+        # "legal_content_placeholder": "[Content to be added here...]", # REMOVIDO
         # Selection View
         "selection_title": "Select Players", "selected_players_count": "Players selected: {count}", "clear_button": "Clear", "teams_count": "{count} Teams",
         # Results View
@@ -87,11 +87,11 @@ STRINGS = {
         # Main View & Menus
         "app_title": "Organizador de Equipos", "toggle_theme_tooltip": "Cambiar Tema", "settings_tooltip": "Configuración", "select_list_label": "Selecciona la Lista:", "organize_button_text": "Organizar Equipos", "organize_button_tooltip_disabled": "Selecciona una lista específica para organizar equipos", "register_player_button_text": "Registrar Jugador", "filter_by_name_label": "Filtrar por Nombre...", "all_players_list_name": "Todos los Jugadores", "create_new_list_menu": "Crear nueva lista", "rename_list_menu": "Renombrar lista actual", "manage_players_menu": "Gestionar Jugadores", "delete_list_menu": "Eliminar lista actual",
         # Components (Formulários & Diálogos)
-        "player_name_label": "Nombre", "name_cannot_be_empty_error": "El nombre no puede estar vacío", "select_at_least_one_list_error": "¡Selecciona al menos una lista!", "player_saved_success": "Registrado con éxito", "player_updated_success": "¡Jugador actualizado!", "generic_error": "Error al registrar: {error}", "new_player_title": "Nuevo Jugador", "edit_player_title": "Editar Jugador", "choose_photo_button": "Elegir Foto", "change_photo_button": "Cambiar Foto", "skill_label": "Habilidad:", "add_to_lists_label": "Añadir a Listas:", "save_player_button": "Guardar Jugador", "update_button": "Actualizar", "delete_confirmation_title": "Confirmar Eliminación", "delete_player_confirmation_content": "¿Estás seguro de que quieres eliminar a este jugador?", "delete_list_confirmation_content": "¿Estás seguro de que quieres borrar la lista '{list_name}'?", "yes_button": "Sí", "no_button": "No", "cancel_button": "Cancelar", "save_button": "Guardar", "player_deleted_success": "¡Jugador eliminado!", "edit_tooltip": "Editar", "delete_tooltip": "Eliminar", "empty_state_title": "No hay jugadores por aquí...", "empty_state_subtitle1": "¡Haz clic en 'Registrar Jugador' para añadir el primero!", "empty_state_subtitle2": "O usa el menú (⋮) y 'Gestionar Jugadores' para añadir jugadores existentes a esta lista.",
+        "player_name_label": "Nombre", "name_cannot_be_empty_error": "El nombre no pode estar vacío", "select_at_least_one_list_error": "¡Selecciona al menos una lista!", "player_saved_success": "Registrado con éxito", "player_updated_success": "¡Jugador actualizado!", "generic_error": "Error al registrar: {error}", "new_player_title": "Nuevo Jugador", "edit_player_title": "Editar Jugador", "choose_photo_button": "Elegir Foto", "change_photo_button": "Cambiar Foto", "skill_label": "Habilidad:", "add_to_lists_label": "Añadir a Listas:", "save_player_button": "Guardar Jugador", "update_button": "Actualizar", "delete_confirmation_title": "Confirmar Eliminación", "delete_player_confirmation_content": "¿Estás seguro de que quieres eliminar a este jugador?", "delete_list_confirmation_content": "¿Estás seguro de que quieres borrar la lista '{list_name}'?", "yes_button": "Sí", "no_button": "No", "cancel_button": "Cancelar", "save_button": "Guardar", "player_deleted_success": "¡Jugador eliminado!", "edit_tooltip": "Editar", "delete_tooltip": "Eliminar", "empty_state_title": "No hay jugadores por aquí...", "empty_state_subtitle1": "¡Haz clic en 'Registrar Jugador' para añadir el primero!", "empty_state_subtitle2": "O usa el menú (⋮) y 'Gestionar Jugadores' para añadir jugadores existentes a esta lista.",
         # Dialogs
         "create_list_dialog_title": "Crear Nueva Lista", "new_list_name_label": "Nombre de la Nueva Lista", "list_already_exists_error": "Esta lista ya existe.", "rename_list_dialog_title": "Renombrar Lista", "new_list_name_label_edit": "Nuevo nombre de la lista", "list_renamed_success": "¡Lista renombrada con éxito!", "cannot_delete_last_list_error": "No se puede borrar la última lista.",
         # Settings View
-        "settings_title": "Configuración", "back_button_tooltip": "Volver", "export_title": "Exportar Listas y Jugadores", "export_subtitle": "Guarda listas y jugadores en un archivo CSV.", "import_title": "Importar Listas y Jugadores", "import_subtitle": "Añade listas y jugadores desde un archivo CSV.", "save_file_dialog_title": "Guardar Archivo de Listas y Jugadores", "open_file_dialog_title": "Abrir Archivo de Listas y Jugadores", "import_dialog_title": "Modo de Importación", "import_dialog_content": "¿Qué hacer con los jugadores del archivo que ya existen en la aplicación?", "import_mode_ignore": "Ignorar", "import_mode_overwrite": "Sobrescribir", "continue_import_button": "Continuar Importación", "export_success": "¡Listas y jugadores exportados con éxito!", "export_error": "Error al exportar archivo: {error}", "import_summary": "Importación: {added_players} jugadores y {added_lists} listas creados. {updated_players} jugadores actualizados, {skipped_players} ignorados.", "import_error": "Error al importar archivo: {error}", "language_selection_label": "Idioma de la Aplicación:", "language_pt_br": "Portugués (Brasil)", "language_en_us": "Inglés (EE.UU.)", "language_es": "Español",
+        "settings_title": "Configuración", "back_button_tooltip": "Volver", "export_title": "Exportar Listas y Jugadores", "export_subtitle": "Guarda listas y jugadores en um arquivo CSV.", "import_title": "Importar Listas y Jugadores", "import_subtitle": "Añade listas y jugadores desde un arquivo CSV.", "save_file_dialog_title": "Guardar Archivo de Listas y Jugadores", "open_file_dialog_title": "Abrir Archivo de Listas y Jugadores", "import_dialog_title": "Modo de Importación", "import_dialog_content": "¿Qué hacer con los jugadores del archivo que ya existen en la aplicación?", "import_mode_ignore": "Ignorar", "import_mode_overwrite": "Sobrescribir", "continue_import_button": "Continuar Importación", "export_success": "¡Listas y jugadores exportados con éxito!", "export_error": "Error al exportar archivo: {error}", "import_summary": "Importación: {added_players} jugadores y {added_lists} listas creados. {updated_players} jugadores actualizados, {skipped_players} ignorados.", "import_error": "Error al importar archivo: {error}", "language_selection_label": "Idioma de la Aplicación:", "language_pt_br": "Portugués (Brasil)", "language_en_us": "Inglés (EE.UU.)", "language_es": "Español",
         # Pro Version & Limitations
         "# Pro Version & Limitations": "", "become_pro_title": "Hazte Pro (Desbloquear Todo)", "become_pro_subtitle": "Elimina limitaciones. (Estado: {status})", # Eliminado "anuncios"
         "restore_purchases_title": "Restaurar Compras", "restore_purchases_subtitle": "¿Ya compraste? Reactiva la versión Pro aquí.", "pro_activated_success": "¡Versión Pro activada!", "already_pro": "¡Ya tienes la Versión Pro!", "deactivate_pro_title": "Desactivar Pro (Prueba)", "deactivate_pro_subtitle": "Vuelve a la versión gratuita para pruebas.", "pro_deactivated_success": "Versión Pro desactivada.", "status_pro": "Activo", "status_free": "Gratis",
@@ -113,9 +113,9 @@ STRINGS = {
         "# Legal Screens": "",
         "privacy_policy_title": "Política de Privacidad",
         "terms_of_use_title": "Términos de Uso",
-        "legal_content_placeholder": "[Contenido que se añadirá aquí...]",
+        # "legal_content_placeholder": "[Contenido que se añadirá aquí...]", # REMOVIDO
         # Selection View
-        "selection_title": "Seleccionar Jugadores", "selected_players_count": "Jugadores seleccionados: {count}", "clear_button": "Limpiar", "teams_count": "{count} Equipos",
+        "selection_title": "Seleccionar Jugadores", "selected_players_count": "Jugadores seleccionados: {count}", "clear_button": "Limpar", "teams_count": "{count} Equipos",
         # Results View
         "results_title": "Equipos Generados", "reorganize_button": "Reorganizar", "share_all_button": "Compartir Todos", "reorganizing_dialog_title": "Reorganizando...", "organizing_dialog_title": "Organizando...", "generate_teams_first_error": "¡Genera los equipos primero!", "all_teams_copied_success": "¡Equipos copiados!", "team_copied_success": "¡Equipo {team_name} copiado!", "total_skill_label": "Habilidad Total:", "copy_button_tooltip": "Copiar {team_name}", "team_name_prefix": "Equipo {color_name}",
         # Manage Players View

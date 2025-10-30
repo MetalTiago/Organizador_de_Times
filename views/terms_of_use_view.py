@@ -1,20 +1,54 @@
 # views/terms_of_use_view.py
 import flet as ft
 from localization import get_string
+import os # Importa o módulo os
 
 def build_terms_of_use_view(state):
     """Constrói a view dos Termos de Uso."""
 
-    # Conteúdo de exemplo
+    def load_terms_content(lang_code):
+        """Carrega o conteúdo do ficheiro markdown com base no idioma."""
+        # Define o nome do ficheiro com base no idioma
+        filename_map = {
+            "pt_br": "terms_of_use_pt.md",
+            "es": "terms_of_use_es.md",
+            "en_us": "terms_of_use_en.md" # Padrão
+        }
+        # Escolhe o ficheiro ou usa 'en_us' como fallback
+        filename = filename_map.get(lang_code, filename_map["en_us"])
+        
+        filepath = os.path.join("assets", filename)
+        
+        try:
+            # Tenta ler o conteúdo do ficheiro
+            with open(filepath, "r", encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"AVISO: Ficheiro de termos de uso não encontrado: {filepath}")
+            return f"Erro: Ficheiro '{filename}' não encontrado."
+        except Exception as e:
+            print(f"Erro ao ler ficheiro de termos: {e}")
+            return f"Erro ao carregar conteúdo: {e}"
+
+    # Carrega o conteúdo apropriado
+    terms_text = load_terms_content(state.current_language)
+
+    # --- CORREÇÃO DO BUG 'scroll' ---
+    # Coloca o Markdown dentro de uma Coluna rolável
     content = ft.Column(
         [
-            ft.Text(get_string(state, "legal_content_placeholder"), selectable=True),
-            # Ex: ft.Text("Seção 1: Aceitação dos Termos"), ft.Text("...")
+            ft.Markdown(
+                terms_text,
+                selectable=True,
+                auto_follow_links=True # Permite que links (como o email) sejam clicáveis
+                # REMOVIDO: scroll=ft.ScrollMode.ADAPTIVE
+            )
         ],
-        scroll=ft.ScrollMode.ADAPTIVE, # Usa ADAPTIVE
+        scroll=ft.ScrollMode.ADAPTIVE, # Adiciona scroll à Coluna
         expand=True,
         spacing=10
     )
+    # --- FIM DA CORREÇÃO ---
 
     view = ft.Column(
         controls=[
@@ -36,11 +70,11 @@ def build_terms_of_use_view(state):
             ),
             ft.Divider(),
             ft.Container(
-                content=content,
+                content=content, # Adiciona a Coluna rolável
                 expand=True,
                 padding=ft.padding.symmetric(horizontal=15)
             )
         ],
-        expand=True # Garante que a coluna principal ocupe todo o espaço
+        expand=True
     )
     return view
