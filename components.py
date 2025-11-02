@@ -12,8 +12,14 @@ from localization import get_string
 
 state = None
 
-# Define o limite como uma constante
+# (Esta lógica de Fase 1.5 ainda está aqui, vamos removê-la depois)
 PLAYER_LIMIT_FREE = 20
+
+# --- CORREÇÃO (Etapa 2.2) ---
+# Define o caminho de dados gravável, assim como o db_handler.py
+APP_DATA_DIR = os.path.join(os.path.expanduser("~"), ".organizador_de_times")
+# --- FIM DA CORREÇÃO ---
+
 
 def set_page_ref(_state):
     global state; state = _state
@@ -25,7 +31,9 @@ def apply_opacity(color_constant: str, opacity: float) -> str:
 def build_input_container(app_state):
     name_input = ft.TextField(label=get_string(app_state, "player_name_label"), autofocus=True)
     skill_slider = ft.Slider(min=0, max=10, divisions=10, label="{value}", expand=True)
-    img_preview_bgcolor = apply_opacity(ft.colors.ON_SURFACE, 0.1) # Usa ft.colors.
+    
+    img_preview_bgcolor = apply_opacity("on_surface", 0.1)
+    
     img_preview = ft.Container(width=80, height=80, content=ft.Icon(name="person", size=40), border_radius=40, bgcolor=img_preview_bgcolor)
     lists_checkbox_group = ft.Column(scroll=ft.ScrollMode.AUTO)
 
@@ -45,7 +53,7 @@ def build_input_container(app_state):
     def file_picker_result(e: ft.FilePickerResultEvent):
         if e.files:
             selected_file = e.files[0]
-            upload_dir = "assets/uploads"
+            upload_dir = os.path.join(APP_DATA_DIR, "uploads")
             os.makedirs(upload_dir, exist_ok=True)
             dest_path_full = os.path.join(upload_dir, selected_file.name)
             try:
@@ -60,50 +68,60 @@ def build_input_container(app_state):
     if app_state.page: app_state.page.overlay.append(file_picker)
 
     def save_user(e):
-        # --- VERIFICAÇÃO DE LIMITE DE JOGADORES ---
-        if not state.is_pro and count_all_players() >= PLAYER_LIMIT_FREE:
-            state.page.show_dialog(ft.AlertDialog(
+        # --- (Esta é a Fase 1.5, removeremos esta verificação) ---
+        if count_all_players() >= PLAYER_LIMIT_FREE:
+            
+            # --- CORREÇÃO (show_dialog) ---
+            # Este era o bloco que causou o erro (Linha 78)
+            dialog = ft.AlertDialog(
                  title=ft.Text(get_string(state, "limit_reached_title")),
                  content=ft.Text(get_string(state, "player_limit_reached_message", limit=PLAYER_LIMIT_FREE)),
                  actions=[
                      ft.TextButton(get_string(state, "cancel_button"), on_click=lambda _: setattr(state.page.dialog, 'open', False) or state.update()),
                      ft.ElevatedButton(get_string(state, "upgrade_button"), on_click=lambda _: state.navigate_to("settings"))
                  ]
-            ))
+            )
+            state.page.dialog = dialog
+            dialog.open = True
+            # --- FIM DA CORREÇÃO ---
+            
             state.update()
             return # Impede de salvar
+        # --- (Fim da Fase 1.5) ---
 
         if not name_input.value:
              name_input.error_text = get_string(app_state, "name_cannot_be_empty_error")
              state.update(); return
         selected_list_ids = [cb.data for cb in lists_checkbox_group.controls if cb.value]
         if not selected_list_ids:
-             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "select_at_least_one_list_error")), bgcolor=ft.colors.RED_700); state.page.snack_bar.open = True; state.update(); return # Usa ft.colors.
+             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "select_at_least_one_list_error")), bgcolor="red_700"); state.page.snack_bar.open = True; state.update(); 
         try:
              player_id = insert_player(name_input.value, int(skill_slider.value), img_preview.data)
              for list_id in selected_list_ids: add_player_to_list(list_id, player_id)
-             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_saved_success")), bgcolor=ft.colors.GREEN_700); state.page.snack_bar.open = True # Usa ft.colors.
+             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_saved_success")), bgcolor="green_700"); state.page.snack_bar.open = True 
              atualizar_tabela(state); state.hide_form()
         except Exception as ex:
-             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "generic_error", error=ex)), bgcolor=ft.colors.RED_700); state.page.snack_bar.open = True # Usa ft.colors.
+             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "generic_error", error=ex)), bgcolor="red_700"); state.page.snack_bar.open = True 
              state.update()
 
     skill_text = ft.Text("0")
     skill_slider.on_change = lambda e: setattr(skill_text, 'value', f"{int(e.control.value):n}") or state.update()
 
-    input_card = ft.Card( visible=False, elevation=10, content=ft.Container(padding=20, content=ft.Column( [ ft.Row([ft.Text(get_string(app_state, "new_player_title"), size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: state.hide_form())], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), ft.Row([ ft.Column([img_preview, ft.TextButton(get_string(app_state, "choose_photo_button"), icon="upload_file", on_click=lambda _: file_picker.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER), ft.Column([name_input, ft.Row([ft.Text(get_string(app_state, "skill_label")), skill_text])], expand=True) ], alignment=ft.CrossAxisAlignment.START), skill_slider, ft.Divider(), ft.Text(get_string(app_state, "add_to_lists_label"), weight="bold"), ft.Container( content=lists_checkbox_group, height=150, border=ft.border.all(1, apply_opacity(ft.colors.ON_SURFACE, 0.2)), border_radius=8, padding=ft.padding.symmetric(horizontal=10) ), ft.Container(content=ft.FilledButton(get_string(app_state, "save_player_button"), on_click=save_user, icon="save"), alignment=ft.alignment.center, padding=10) ], scroll=ft.ScrollMode.ADAPTIVE )) ) # Usa ft.colors.
+    input_card = ft.Card( visible=False, elevation=10, content=ft.Container(padding=20, content=ft.Column( [ ft.Row([ft.Text(get_string(app_state, "new_player_title"), size=20, weight="bold"), ft.IconButton(icon="close", icon_size=25, on_click=lambda e: state.hide_form())], alignment=ft.MainAxisAlignment.SPACE_BETWEEN), ft.Row([ ft.Column([img_preview, ft.TextButton(get_string(app_state, "choose_photo_button"), icon="upload_file", on_click=lambda _: file_picker.pick_files(allow_multiple=False, allowed_extensions=["jpg", "jpeg", "png"]))], horizontal_alignment=ft.CrossAxisAlignment.CENTER), ft.Column([name_input, ft.Row([ft.Text(get_string(app_state, "skill_label")), skill_text])], expand=True) ], alignment=ft.CrossAxisAlignment.START), skill_slider, ft.Divider(), ft.Text(get_string(app_state, "add_to_lists_label"), weight="bold"), ft.Container( content=lists_checkbox_group, height=150, border=ft.border.all(1, apply_opacity("on_surface", 0.2)), border_radius=8, padding=ft.padding.symmetric(horizontal=10) ), ft.Container(content=ft.FilledButton(get_string(app_state, "save_player_button"), on_click=save_user, icon="save"), alignment=ft.alignment.center, padding=10) ], scroll=ft.ScrollMode.ADAPTIVE )) ) 
     return input_card
 
 def build_edit_container(app_state):
     name_edit = ft.TextField(label=get_string(app_state, "player_name_label"))
     skill_edit = ft.Slider(min=0, max=10, divisions=10, label="{value}", expand=True)
-    img_edit_bgcolor = apply_opacity(ft.colors.ON_SURFACE, 0.1) # Usa ft.colors.
+    img_edit_bgcolor = apply_opacity("on_surface", 0.1) 
     img_preview_edit = ft.Container(width=80, height=80, content=ft.Icon(name="person", size=40), border_radius=40, bgcolor=img_edit_bgcolor)
     id_edit = ft.Text(); skill_text_edit = ft.Text("0")
 
     def file_picker_result_edit(e: ft.FilePickerResultEvent):
         if e.files:
-            selected_file = e.files[0]; upload_dir = "assets/uploads"; os.makedirs(upload_dir, exist_ok=True)
+            selected_file = e.files[0]; 
+            upload_dir = os.path.join(APP_DATA_DIR, "uploads"); 
+            os.makedirs(upload_dir, exist_ok=True)
             dest_path_full = os.path.join(upload_dir, selected_file.name)
             try:
                 shutil.copy(selected_file.path, dest_path_full); relative_path = os.path.join("uploads", selected_file.name).replace("\\", "/")
@@ -118,10 +136,9 @@ def build_edit_container(app_state):
     def hide_edit_form(): app_state.edit_container.visible = False; app_state.main_view_content.visible = True; app_state.update()
 
     def update_and_save_user(e):
-        # A edição não conta para o limite, então não há verificação aqui
         update_player(int(id_edit.value), name_edit.value, int(skill_edit.value), img_preview_edit.data)
         hide_edit_form(); atualizar_tabela(app_state)
-        state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_updated_success")), bgcolor=ft.colors.GREEN_700); state.page.snack_bar.open = True; state.update() # Usa ft.colors.
+        state.page.snack_bar = ft.SnackBar(ft.Text(get_string(app_state, "player_updated_success")), bgcolor="green_700"); state.page.snack_bar.open = True; state.update() 
 
     skill_edit.on_change = lambda e: setattr(skill_text_edit, 'value', f"{int(e.control.value):n}") or state.update()
 
@@ -132,7 +149,7 @@ def build_edit_container(app_state):
         skill_edit.value = float(user_data["skill"]); skill_text_edit.value = str(int(skill_edit.value))
         img_preview_edit.data = None; img_preview_edit.content = ft.Icon(name="person", size=40)
         if user_data["photo_path"]:
-             full_photo_path_edit = os.path.join("assets", user_data["photo_path"])
+             full_photo_path_edit = os.path.join(APP_DATA_DIR, user_data["photo_path"])
              if os.path.exists(full_photo_path_edit):
                  try:
                      with open(full_photo_path_edit, "rb") as f: image_base64 = base64.b64encode(f.read()).decode('utf-8')
@@ -152,14 +169,14 @@ def atualizar_tabela(app_state, apply_filters=False):
 
     if not users:
         is_all_players_view = (list_id == 0)
-        empty_state_component = ft.Container( content=ft.Column( [ ft.Icon(name="person_search", size=60, color=apply_opacity(ft.colors.ON_SURFACE, 0.4)), ft.Text(get_string(app_state, "empty_state_title"), size=18, weight="bold"), ft.Text(get_string(app_state, "empty_state_subtitle1"), size=14, color=apply_opacity(ft.colors.ON_SURFACE, 0.8), text_align=ft.TextAlign.CENTER), ft.Text(get_string(app_state, "empty_state_subtitle2"), size=14, color=apply_opacity(ft.colors.ON_SURFACE, 0.8), visible=not is_all_players_view, text_align=ft.TextAlign.CENTER), ], spacing=10, horizontal_alignment=ft.CrossAxisAlignment.CENTER, opacity=0.8, ), padding=ft.padding.symmetric(vertical=50, horizontal=10), alignment=ft.alignment.center ) # Usa ft.colors.
+        empty_state_component = ft.Container( content=ft.Column( [ ft.Icon(name="person_search", size=60, color=apply_opacity("on_surface", 0.4)), ft.Text(get_string(app_state, "empty_state_title"), size=18, weight="bold"), ft.Text(get_string(app_state, "empty_state_subtitle1"), size=14, color=apply_opacity("on_surface", 0.8), text_align=ft.TextAlign.CENTER), ft.Text(get_string(app_state, "empty_state_subtitle2"), size=14, color=apply_opacity("on_surface", 0.8), visible=not is_all_players_view, text_align=ft.TextAlign.CENTER), ], spacing=10, horizontal_alignment=ft.CrossAxisAlignment.CENTER, opacity=0.8, ), padding=ft.padding.symmetric(vertical=50, horizontal=10), alignment=ft.alignment.center ) 
         app_state.lista_jogadores.controls.append(empty_state_component)
     else:
         for user in users:
             user_dict = {"id": user[0], "name": user[1], "skill": user[2], "photo_path": user[3]}; skill_color = cor_skill(user_dict["skill"])
             avatar_display = ft.Container(width=40, height=40, content=ft.Icon(name="person_outline"), border_radius=20, bgcolor=skill_color)
             if user_dict["photo_path"]:
-                 full_photo_path_list = os.path.join("assets", user_dict["photo_path"])
+                 full_photo_path_list = os.path.join(APP_DATA_DIR, user_dict["photo_path"])
                  if os.path.exists(full_photo_path_list):
                      try:
                          with open(full_photo_path_list, "rb") as f: image_base64 = base64.b64encode(f.read()).decode('utf-8')
@@ -167,26 +184,27 @@ def atualizar_tabela(app_state, apply_filters=False):
                      except Exception as img_list_err: print(f"Erro ao carregar imagem na lista: {img_list_err}"); avatar_display.content = ft.Icon(name="person_outline")
                  else: avatar_display.content = ft.Icon(name="person_outline")
 
-            list_item = ft.Container( content=ft.Row( [ avatar_display, ft.Column([ ft.Text(user_dict["name"], weight="bold"), ft.Text(f"{get_string(state, 'skill_label')} {user_dict['skill']}", color=skill_color) ], spacing=2, alignment=ft.MainAxisAlignment.CENTER, expand=True), ft.Row([ ft.IconButton(icon="edit", icon_color=ft.colors.BLUE_400, data=user_dict, on_click=lambda e: state.show_edit_form(e.control.data), tooltip=get_string(state, "edit_tooltip")), ft.IconButton(icon="delete", icon_color=ft.colors.RED_400, data=user_dict["id"], on_click=lambda e: showdelete_confirm(e.control.data), tooltip=get_string(state, "delete_tooltip")) ]) ], vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=15 ), padding=ft.padding.symmetric(vertical=10, horizontal=15), border=ft.border.only(bottom=ft.BorderSide(1, apply_opacity(ft.colors.ON_SURFACE, 0.1))), ) # Usa ft.colors.
+            list_item = ft.Container( content=ft.Row( [ avatar_display, ft.Column([ ft.Text(user_dict["name"], weight="bold"), ft.Text(f"{get_string(state, 'skill_label')} {user_dict['skill']}", color=skill_color) ], spacing=2, alignment=ft.MainAxisAlignment.CENTER, expand=True), ft.Row([ ft.IconButton(icon="edit", icon_color="blue_400", data=user_dict, on_click=lambda e: state.show_edit_form(e.control.data), tooltip=get_string(state, "edit_tooltip")), ft.IconButton(icon="delete", icon_color="red_400", data=user_dict["id"], on_click=lambda e: showdelete_confirm(e.control.data), tooltip=get_string(state, "delete_tooltip")) ]) ], vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=15 ), padding=ft.padding.symmetric(vertical=10, horizontal=15), border=ft.border.only(bottom=ft.BorderSide(1, apply_opacity("on_surface", 0.1))), ) 
             app_state.lista_jogadores.controls.append(list_item)
 
     app_state.loading_indicator.visible = False; app_state.lista_jogadores.visible = True; app_state.update()
 
 def cor_skill(n):
     n = int(n)
-    if n <= 4: return apply_opacity(ft.colors.ON_SURFACE, 0.8) # Usa ft.colors.
-    if 4 < n < 7: return ft.colors.RED_ACCENT_400
-    elif 6 < n < 9: return ft.colors.YELLOW_ACCENT_400
-    elif n >= 9: return ft.colors.LIGHT_BLUE_ACCENT_400
-    return ft.colors.ON_SURFACE # Usa ft.colors.
+    if n <= 4: return apply_opacity("on_surface", 0.8) 
+    if 4 < n < 7: return "redaccent_400"
+    elif 6 < n < 9: return "yellowaccent_400"
+    elif n >= 9: return "lightblueaccent_400"
+    return "on_surface" 
 
 def showdelete_confirm(player_id):
+    # Esta função já estava usando a sintaxe correta (page.dialog), então nenhuma correção é necessária aqui.
     confirm_delete_dialog = ft.AlertDialog( modal=True, title=ft.Text(get_string(state, "delete_confirmation_title")), content=ft.Text(get_string(state, "delete_player_confirmation_content")) )
     def confirm_action(e):
         confirm_delete_dialog.open = False
         if e.control.text == get_string(state, "yes_button"):
             delete_player(player_id); atualizar_tabela(state)
-            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "player_deleted_success")), bgcolor=ft.colors.GREEN_700); state.page.snack_bar.open = True # Usa ft.colors.
+            state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "player_deleted_success")), bgcolor="green_700"); state.page.snack_bar.open = True 
         state.update()
-    confirm_delete_dialog.actions = [ ft.TextButton(get_string(state, "yes_button"), on_click=confirm_action, style=ft.ButtonStyle(color=ft.colors.RED)), ft.TextButton(get_string(state, "no_button"), on_click=confirm_action) ] # Usa ft.colors.
+    confirm_delete_dialog.actions = [ ft.TextButton(get_string(state, "yes_button"), on_click=confirm_action, style=ft.ButtonStyle(color="red")), ft.TextButton(get_string(state, "no_button"), on_click=confirm_action) ] 
     state.page.dialog = confirm_delete_dialog; confirm_delete_dialog.open = True; state.update()

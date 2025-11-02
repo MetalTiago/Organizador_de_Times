@@ -2,11 +2,15 @@
 import sqlite3
 import os
 
+# --- LÓGICA ORIGINAL RESTAURADA ---
+# Esta lógica funciona no Desktop e é traduzida corretamente pelo Flet no Android
 home_dir = os.path.expanduser("~")
 APP_DATA_DIR = os.path.join(home_dir, ".organizador_de_times")
 os.makedirs(APP_DATA_DIR, exist_ok=True) # Cria o diretório se não existir
 DB_PATH = os.path.join(APP_DATA_DIR, "organizador.db")
 print(f"Usando banco de dados em: {DB_PATH}")
+# --- FIM DA RESTAURAÇÃO ---
+
 
 def execute_migrations():
     """Garante que todas as tabelas e a lista padrão existam."""
@@ -105,7 +109,6 @@ def delete_list(list_id):
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("PRAGMA foreign_keys = ON") # Garante que ON DELETE CASCADE funcione
         conn.execute("DELETE FROM lists WHERE id = ?", (list_id,))
-        # conn.execute("DELETE FROM list_players WHERE list_id = ?", (list_id,)) # Redundante
         conn.commit() # Commit após deleção
 
 def add_player_to_list(list_id, player_id):
@@ -116,7 +119,7 @@ def add_player_to_list(list_id, player_id):
 
 def get_players_by_list(list_id):
     """Retorna os jogadores (ID, Nome, Skill, Foto) de uma lista específica."""
-    if not isinstance(list_id, int) or list_id <= 0: return [] # Adiciona validação
+    if not isinstance(list_id, int) or list_id <= 0: return [] 
     with sqlite3.connect(DB_PATH) as conn:
         query = """
             SELECT p.id, p.name, p.skill, p.photo_path
@@ -152,7 +155,6 @@ def delete_player(player_id):
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute("PRAGMA foreign_keys = ON") # Garante ON DELETE CASCADE
         conn.execute("DELETE FROM players WHERE id = ?", (player_id,))
-        # conn.execute("DELETE FROM list_players WHERE player_id = ?", (player_id,)) # Redundante
         conn.commit() # Commit após deleção
 
 def update_player(player_id, name, skill, photo_path=None):
@@ -170,17 +172,15 @@ def update_players_in_list(list_id, new_player_ids):
             conn.executemany("INSERT INTO list_players (list_id, player_id) VALUES (?, ?)", values_to_insert)
         conn.commit()
 
-# --- FUNÇÕES DE CONTAGEM ADICIONADAS ---
 def count_custom_lists():
     """Conta o número de listas criadas pelo utilizador (exclui 'Jogadores Gerais')."""
     with sqlite3.connect(DB_PATH) as conn:
         try:
-            # Conta todas as listas cujo nome NÃO é 'Jogadores Gerais' (case-insensitive)
             result = conn.execute("SELECT COUNT(*) FROM lists WHERE name != 'Jogadores Gerais' COLLATE NOCASE").fetchone()
             return result[0] if result else 0
         except sqlite3.Error as e:
             print(f"Erro ao contar listas personalizadas: {e}")
-            return 999 # Retorna um número alto em caso de erro para não bloquear indevidamente
+            return 999 
 
 def count_all_players():
     """Conta o número total de jogadores cadastrados."""
@@ -190,4 +190,4 @@ def count_all_players():
             return result[0] if result else 0
         except sqlite3.Error as e:
             print(f"Erro ao contar jogadores: {e}")
-            return 0 # Retorna 0 em caso de erro
+            return 0

@@ -1,7 +1,6 @@
 # main.py
 import flet as ft
-# Usa ft.colors.
-# import asyncio
+
 from db_handler import execute_migrations
 from app_state import AppState
 from views.main_view import build_main_view
@@ -13,18 +12,18 @@ from views.privacy_policy_view import build_privacy_policy_view
 from views.terms_of_use_view import build_terms_of_use_view
 from components import set_page_ref, build_input_container, build_edit_container, atualizar_tabela
 from localization import get_string
-# REMOVIDO: import ads_manager
+# REMOVIDO: import ads_manager 
 
-# Importa funções de contagem se necessário (aqui ou onde for usado)
+# (Lógica de Fase 1.5 - Remoção de Limites)
 try:
-    from db_handler import count_all_players, count_custom_lists # Importa counts
-    PLAYER_LIMIT_FREE = 20 # Define limite aqui também se usado em show_form
-    LIST_LIMIT_FREE = 2 # Define limite aqui também se usado em show_form (ou melhor importar da view)
+    from db_handler import count_all_players, count_custom_lists 
+    PLAYER_LIMIT_FREE = 999 # (Limite removido, definindo alto)
+    LIST_LIMIT_FREE = 999 # (Limite removido, definindo alto)
 except ImportError:
     def count_all_players(): return 0
     def count_custom_lists(): return 0
-    PLAYER_LIMIT_FREE = 20
-    LIST_LIMIT_FREE = 2
+    PLAYER_LIMIT_FREE = 999
+    LIST_LIMIT_FREE = 999
 
 
 def main(page: ft.Page):
@@ -38,15 +37,13 @@ def main(page: ft.Page):
     dark_theme_obj.brightness = ft.Brightness.DARK
     page.dark_theme = dark_theme_obj
 
-    execute_migrations()
     app_state = AppState(page)
-    set_page_ref(app_state) # Passa a referência do estado para os componentes
+    set_page_ref(app_state) 
 
     page.theme_mode = app_state.preferred_theme_mode
     page.title = get_string(app_state, "app_title")
-
-    # REMOVIDO: Inicialização de anúncios
-    # if not app_state.is_pro: ads_manager.initialize_ads(page)
+    
+    execute_migrations()
 
     app_state.input_container = build_input_container(app_state)
     app_state.edit_container = build_edit_container(app_state)
@@ -77,8 +74,6 @@ def main(page: ft.Page):
     }
 
     def show_form():
-        # A verificação de limite está agora em components.py (build_input_container > save_user)
-        # Não precisamos duplicar aqui, apenas garantir que components.py tem acesso a count_all_players
         if app_state.populate_new_player_lists_form:
             app_state.populate_new_player_lists_form()
         app_state.input_container.visible = True
@@ -86,8 +81,6 @@ def main(page: ft.Page):
         app_state.update()
 
     def hide_form():
-        # REMOVIDO: Chamada de anúncio intersticial
-        # if not app_state.is_pro: ads_manager.show_interstitial(page)
         app_state.input_container.visible = False
         app_state.main_view_content.visible = True
         app_state.update()
@@ -100,17 +93,13 @@ def main(page: ft.Page):
         page.route = f"/{view_name}"
         builder = view_builders.get(view_name)
         if not builder:
-            # TODO: Adicionar string de erro
             page.add(ft.Text(f"Erro: View '{view_name}' não encontrada."))
             return
 
         view_to_display = builder(app_state)
-
-        # --- Lógica de Banner Removida ---
-        # Adiciona apenas a view principal diretamente à página
+        
         page.add(view_to_display)
 
-        # Lógica de inicialização específica de cada view
         if view_name == "main":
             if hasattr(app_state, 'populate_lists_dropdown') and app_state.populate_lists_dropdown: app_state.populate_lists_dropdown()
             atualizar_tabela(app_state)
@@ -119,12 +108,13 @@ def main(page: ft.Page):
              if hasattr(app_state, 'montar_lista_jogadores') and app_state.montar_lista_jogadores: app_state.montar_lista_jogadores()
         elif view_name == "results":
              if not app_state.team_count_slider or not app_state.team_count_slider.value or len(app_state.selecionados) < int(app_state.team_count_slider.value):
-                # TODO: Traduzir
-                page.snack_bar = ft.SnackBar(ft.Text("Verifique o número de times e jogadores selecionados."), bgcolor=ft.colors.RED_700); page.snack_bar.open = True # Usa ft.colors.
+                # --- CORREÇÃO DE COR ---
+                page.snack_bar = ft.SnackBar(ft.Text("Verifique o número de times e jogadores selecionados."), bgcolor="red_700")
+                # --- FIM DA CORREÇÃO ---
+                page.snack_bar.open = True
                 page.clean(); navigate_to("selection"); return
-             # else: A organização inicial é chamada DENTRO de build_results_view
-
-        page.update() # Atualiza a página após adicionar a nova view
+             
+        page.update() 
     app_state.navigate_to = navigate_to
 
     navigate_to("main")

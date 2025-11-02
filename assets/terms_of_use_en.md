@@ -2,7 +2,7 @@ Terms & Conditions (EN)
 
 These Terms and Conditions apply to the Organizador de Times mobile application (hereinafter referred to as the "Application"), which has been developed by Tiago Fernando Soares Gardenal (hereinafter referred to as the "Service Provider"), and is offered as a Freemium service.
 
-By downloading, installing, accessing, or using the Application, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. The use of the Application without agreement to these Terms is strictly prohibited.
+By downloading, installing, accessing, or using the Application, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. The use of the Application without agreenent to these Terms is strictly prohibited.
 
 Unauthorized reproduction, distribution, modification, reverse engineering, decompilation, extraction of source code, translation into other languages, or creation of derivative works based on the Application or any of its components is expressly forbidden. All trademarks, copyrights, database rights, and other intellectual property rights related to the Application remain exclusively owned by the Service Provider.
 

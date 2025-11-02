@@ -1,26 +1,22 @@
 # views/privacy_policy_view.py
 import flet as ft
 from localization import get_string
-import os # Importa o módulo os
+import os 
 
 def build_privacy_policy_view(state):
     """Constrói a view da Política de Privacidade."""
 
     def load_policy_content(lang_code):
         """Carrega o conteúdo do ficheiro markdown com base no idioma."""
-        # Define o nome do ficheiro com base no idioma
         filename_map = {
             "pt_br": "privacy_policy_pt.md",
             "es": "privacy_policy_es.md",
-            "en_us": "privacy_policy_en.md" # Padrão
+            "en_us": "privacy_policy_en.md" 
         }
-        # Escolhe o ficheiro ou usa 'en_us' como fallback
         filename = filename_map.get(lang_code, filename_map["en_us"])
-        
         filepath = os.path.join("assets", filename)
         
         try:
-            # Tenta ler o conteúdo do ficheiro
             with open(filepath, "r", encoding="utf-8") as f:
                 return f.read()
         except FileNotFoundError:
@@ -30,53 +26,46 @@ def build_privacy_policy_view(state):
             print(f"Erro ao ler ficheiro de política: {e}")
             return f"Erro ao carregar conteúdo: {e}"
 
-    # Carrega o conteúdo apropriado
     policy_text = load_policy_content(state.current_language)
 
-    # --- CORREÇÃO DO BUG 'scroll' ---
-    # Coloca o Markdown dentro de uma Coluna rolável
     content = ft.Column(
         [
             ft.Markdown(
                 policy_text,
                 selectable=True,
-                auto_follow_links=True # Permite que links (como o email) sejam clicáveis
-                # REMOVIDO: scroll=ft.ScrollMode.ADAPTIVE
+                auto_follow_links=True 
             )
         ],
-        scroll=ft.ScrollMode.ADAPTIVE, # Adiciona scroll à Coluna
+        scroll=ft.ScrollMode.ADAPTIVE, 
         expand=True,
         spacing=10
     )
-    # --- FIM DA CORREÇÃO ---
 
     view = ft.Column(
         controls=[
             ft.Row(
                 [
                     ft.IconButton(
-                        icon="arrow_back",
-                        on_click=lambda e: state.navigate_to("settings"), # Volta para Configurações
+                        icon="arrow_back", # <--- CORREÇÃO DE ÍCONE
+                        on_click=lambda e: state.navigate_to("settings"), 
                         tooltip=get_string(state, "back_button_tooltip")
                     ),
                     ft.Text(
                         get_string(state, "privacy_policy_title"),
                         size=20, weight="bold", expand=True, text_align=ft.TextAlign.CENTER
                     ),
-                    # Espaço reservado para manter o título centralizado
                     ft.Container(width=48)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER
             ),
             ft.Divider(),
-            # Container para o conteúdo Markdown rolável
             ft.Container(
-                content=content, # Adiciona a Coluna rolável
+                content=content, 
                 expand=True,
                 padding=ft.padding.symmetric(horizontal=15)
             )
         ],
-        expand=True # Garante que a coluna principal ocupe todo o espaço
+        expand=True 
     )
     return view

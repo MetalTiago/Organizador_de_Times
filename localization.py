@@ -2,7 +2,7 @@
 
 TEAM_COLORS = {
     "pt_br": ["Vermelho", "Azul", "Verde", "Amarelo", "Roxo", "Laranja", "Ciano", "Rosa", "Verde Limão", "Índigo"],
-    "en_us": ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Cyan", "Pink", "Lime Green", "Indigo"],
+    "en_us": ["Red", "Blue", "green", "Yellow", "Purple", "Orange", "Cyan", "Pink", "Lime green", "Indigo"],
     "es": ["Rojo", "Azul", "Verde", "Amarillo", "Morado", "Naranja", "Cian", "Rosa", "Verde Lima", "Índigo"],
 }
 
@@ -16,20 +16,7 @@ STRINGS = {
         "create_list_dialog_title": "Criar Nova Lista", "new_list_name_label": "Nome da Nova Lista", "list_already_exists_error": "Esta lista já existe.", "rename_list_dialog_title": "Renomear Lista", "new_list_name_label_edit": "Novo nome da lista", "list_renamed_success": "Lista renomeada com sucesso!", "cannot_delete_last_list_error": "Não é possível apagar a última lista.",
         # Settings View
         "settings_title": "Configurações", "back_button_tooltip": "Voltar", "export_title": "Exportar Listas e Jogadores", "export_subtitle": "Salva listas e jogadores em um arquivo CSV.", "import_title": "Importar Listas e Jogadores", "import_subtitle": "Adiciona listas e jogadores de um arquivo CSV.", "save_file_dialog_title": "Salvar Arquivo de Listas e Jogadores", "open_file_dialog_title": "Abrir Arquivo de Listas e Jogadores", "import_dialog_title": "Modo de Importação", "import_dialog_content": "O que fazer com jogadores do arquivo que já existem no app?", "import_mode_ignore": "Ignorar", "import_mode_overwrite": "Sobrescrever", "continue_import_button": "Continuar Importação", "export_success": "Listas e jogadores exportados com sucesso!", "export_error": "Erro ao exportar arquivo: {error}", "import_summary": "Importação: {added_players} jogadores e {added_lists} listas criados. {updated_players} jogadores atualizados, {skipped_players} ignorados.", "import_error": "Erro ao importar arquivo: {error}", "language_selection_label": "Idioma do Aplicativo:", "language_pt_br": "Português (Brasil)", "language_en_us": "Inglês (EUA)", "language_es": "Espanhol",
-        # Pro Version & Limitations
-        "# Pro Version & Limitations": "", "become_pro_title": "Tornar-se Pro (Desbloquear Tudo)", "become_pro_subtitle": "Remove limitações. (Status: {status})", # Removido "anúncios"
-        "restore_purchases_title": "Restaurar Compras", "restore_purchases_subtitle": "Já comprou? Reative a versão Pro aqui.", "pro_activated_success": "Versão Pro ativada!", "already_pro": "Você já possui a Versão Pro!", "deactivate_pro_title": "Desativar Pro (Teste)", "deactivate_pro_subtitle": "Volta para a versão gratuita para testes.", "pro_deactivated_success": "Versão Pro desativada.", "status_pro": "Ativo", "status_free": "Gratuito",
-        "limit_reached_title": "Limite Atingido",
-        "list_limit_reached_message": "A versão gratuita permite criar até {limit} listas personalizadas. Atualize para Pro para listas ilimitadas!",
-        "player_limit_reached_message": "A versão gratuita permite cadastrar até {limit} jogadores. Atualize para Pro para jogadores ilimitados!",
-        "team_limit_reached_message": "A versão gratuita permite organizar até {limit} times. Atualize para Pro para mais times!",
-        "daily_organization_limit_reached_title": "Limite de Organizações Atingido",
-        "daily_organization_limit_reached_message": "Organizações/Reorganizações adicionais requerem a Versão Pro. Atualize para uso ilimitado!",
-        # "watch_ad_button": "Assistir Anúncio", # REMOVIDO
-        "feature_for_pro_title": "Funcionalidade Pro",
-        "sharing_pro_feature_message": "Compartilhar times é uma funcionalidade exclusiva da versão Pro.",
-        "import_export_pro_feature_message": "Importar e Exportar dados é uma funcionalidade exclusiva da versão Pro.",
-        "upgrade_button": "Atualizar para Pro",
+      
         # Legal Screens Links (Settings View)
         "privacy_policy_link_title": "Política de Privacidade",
         "terms_of_use_link_title": "Termos de Uso",
@@ -54,20 +41,7 @@ STRINGS = {
         "create_list_dialog_title": "Create New List", "new_list_name_label": "New List Name", "list_already_exists_error": "This list already exists.", "rename_list_dialog_title": "Rename List", "new_list_name_label_edit": "New list name", "list_renamed_success": "List renamed successfully!", "cannot_delete_last_list_error": "Cannot delete the last list.",
         # Settings View
         "settings_title": "Settings", "back_button_tooltip": "Back", "export_title": "Export Lists and Players", "export_subtitle": "Saves lists and players to a CSV file.", "import_title": "Import Lists and Players", "import_subtitle": "Adds lists and players from a CSV file.", "save_file_dialog_title": "Save Lists and Players File", "open_file_dialog_title": "Open Lists and Players File", "import_dialog_title": "Import Mode", "import_dialog_content": "What to do with players from the file that already exist in the app?", "import_mode_ignore": "Ignore", "import_mode_overwrite": "Overwrite", "continue_import_button": "Continue Import", "export_success": "Lists and players exported successfully!", "export_error": "Error exporting file: {error}", "import_summary": "Import: {added_players} players and {added_lists} lists created. {updated_players} players updated, {skipped_players} skipped.", "import_error": "Error importing file: {error}", "language_selection_label": "App Language:", "language_pt_br": "Portuguese (Brazil)", "language_en_us": "English (US)", "language_es": "Spanish",
-        # Pro Version & Limitations
-        "# Pro Version & Limitations": "", "become_pro_title": "Become Pro (Unlock Everything)", "become_pro_subtitle": "Removes limitations. (Status: {status})", # Removed "ads"
-        "restore_purchases_title": "Restore Purchases", "restore_purchases_subtitle": "Already purchased? Reactivate Pro here.", "pro_activated_success": "Pro Version activated!", "already_pro": "You already have the Pro Version!", "deactivate_pro_title": "Deactivate Pro (Testing)", "deactivate_pro_subtitle": "Reverts to the free version for testing.", "pro_deactivated_success": "Pro Version deactivated.", "status_pro": "Active", "status_free": "Free",
-        "limit_reached_title": "Limit Reached",
-        "list_limit_reached_message": "The free version allows up to {limit} custom lists. Upgrade to Pro for unlimited lists!",
-        "player_limit_reached_message": "The free version allows up to {limit} players. Upgrade to Pro for unlimited players!",
-        "team_limit_reached_message": "The free version allows organizing up to {limit} teams. Upgrade to Pro for more teams!",
-        "daily_organization_limit_reached_title": "Organization Limit Reached",
-        "daily_organization_limit_reached_message": "Additional organizations/reorganizations require the Pro Version. Upgrade for unlimited use!", # Adjusted
-        # "watch_ad_button": "Watch Ad", # REMOVED
-        "feature_for_pro_title": "Pro Feature",
-        "sharing_pro_feature_message": "Sharing teams is a Pro feature.",
-        "import_export_pro_feature_message": "Importing and Exporting data is a Pro feature.",
-        "upgrade_button": "Upgrade to Pro",
+       
         # Legal Screens Links (Settings View)
         "privacy_policy_link_title": "Privacy Policy",
         "terms_of_use_link_title": "Terms of Use",
@@ -92,21 +66,7 @@ STRINGS = {
         "create_list_dialog_title": "Crear Nueva Lista", "new_list_name_label": "Nombre de la Nueva Lista", "list_already_exists_error": "Esta lista ya existe.", "rename_list_dialog_title": "Renombrar Lista", "new_list_name_label_edit": "Nuevo nombre de la lista", "list_renamed_success": "¡Lista renombrada con éxito!", "cannot_delete_last_list_error": "No se puede borrar la última lista.",
         # Settings View
         "settings_title": "Configuración", "back_button_tooltip": "Volver", "export_title": "Exportar Listas y Jugadores", "export_subtitle": "Guarda listas y jugadores en um arquivo CSV.", "import_title": "Importar Listas y Jugadores", "import_subtitle": "Añade listas y jugadores desde un arquivo CSV.", "save_file_dialog_title": "Guardar Archivo de Listas y Jugadores", "open_file_dialog_title": "Abrir Archivo de Listas y Jugadores", "import_dialog_title": "Modo de Importación", "import_dialog_content": "¿Qué hacer con los jugadores del archivo que ya existen en la aplicación?", "import_mode_ignore": "Ignorar", "import_mode_overwrite": "Sobrescribir", "continue_import_button": "Continuar Importación", "export_success": "¡Listas y jugadores exportados con éxito!", "export_error": "Error al exportar archivo: {error}", "import_summary": "Importación: {added_players} jugadores y {added_lists} listas creados. {updated_players} jugadores actualizados, {skipped_players} ignorados.", "import_error": "Error al importar archivo: {error}", "language_selection_label": "Idioma de la Aplicación:", "language_pt_br": "Portugués (Brasil)", "language_en_us": "Inglés (EE.UU.)", "language_es": "Español",
-        # Pro Version & Limitations
-        "# Pro Version & Limitations": "", "become_pro_title": "Hazte Pro (Desbloquear Todo)", "become_pro_subtitle": "Elimina limitaciones. (Estado: {status})", # Eliminado "anuncios"
-        "restore_purchases_title": "Restaurar Compras", "restore_purchases_subtitle": "¿Ya compraste? Reactiva la versión Pro aquí.", "pro_activated_success": "¡Versión Pro activada!", "already_pro": "¡Ya tienes la Versión Pro!", "deactivate_pro_title": "Desactivar Pro (Prueba)", "deactivate_pro_subtitle": "Vuelve a la versión gratuita para pruebas.", "pro_deactivated_success": "Versión Pro desactivada.", "status_pro": "Activo", "status_free": "Gratis",
-        "limit_reached_title": "Límite Alcanzado",
-        "list_limit_reached_message": "¡La versión gratuita permite hasta {limit} listas personalizadas. Actualiza a Pro para listas ilimitadas!",
-        "player_limit_reached_message": "¡La versión gratuita permite hasta {limit} jugadores. Actualiza a Pro para jugadores ilimitados!",
-        "team_limit_reached_message": "¡La versión gratuita permite organizar hasta {limit} equipos. Actualiza a Pro para más equipos!",
-        "daily_organization_limit_reached_title": "Límite de Organizaciones Alcanzado",
-        "daily_organization_limit_reached_message": "Organizaciones/Reorganizaciones adicionales requieren la Versión Pro. ¡Actualiza para uso ilimitado!", # Ajustado
-        # "watch_ad_button": "Ver Anuncio", # ELIMINADO
-        "feature_for_pro_title": "Función Pro",
-        "sharing_pro_feature_message": "Compartir equipos es una función exclusiva de la versión Pro.",
-        "import_export_pro_feature_message": "Importar y Exportar datos es una función exclusiva de la versión Pro.",
-        "upgrade_button": "Actualizar a Pro",
-        # Legal Screens Links (Settings View)
+               # Legal Screens Links (Settings View)
         "privacy_policy_link_title": "Política de Privacidad",
         "terms_of_use_link_title": "Términos de Uso",
         # Legal Screens Titles & Content
