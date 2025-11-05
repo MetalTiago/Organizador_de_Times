@@ -37,27 +37,30 @@ def main(page: ft.Page):
     dark_theme_obj.brightness = ft.Brightness.DARK
     page.dark_theme = dark_theme_obj
 
+    execute_migrations() # Chamada original
     app_state = AppState(page)
     set_page_ref(app_state) 
 
     page.theme_mode = app_state.preferred_theme_mode
     page.title = get_string(app_state, "app_title")
-    
-    execute_migrations()
 
     app_state.input_container = build_input_container(app_state)
     app_state.edit_container = build_edit_container(app_state)
 
+    # --- CORRIGIDO (Sintaxe 0.28 - Ícones como Strings) ---
     initial_icon_name = "wb_sunny" if page.theme_mode == "light" else "nights_stay"
     app_state.theme_toggle_button = ft.IconButton(
         icon=initial_icon_name,
         tooltip=get_string(app_state, "toggle_theme_tooltip")
     )
+    # --- FIM DA CORREÇÃO ---
 
     def toggle_theme(e):
         new_theme_mode = "light" if page.theme_mode == "dark" else "dark"
         page.theme_mode = new_theme_mode
+        # --- CORRIGIDO (Sintaxe 0.28 - Ícones como Strings) ---
         app_state.theme_toggle_button.icon = "wb_sunny" if new_theme_mode == "light" else "nights_stay"
+        # --- FIM DA CORREÇÃO ---
         app_state.theme_toggle_button.tooltip = get_string(app_state, "toggle_theme_tooltip")
         app_state.save_theme_preference(new_theme_mode)
         page.update()
@@ -108,7 +111,7 @@ def main(page: ft.Page):
              if hasattr(app_state, 'montar_lista_jogadores') and app_state.montar_lista_jogadores: app_state.montar_lista_jogadores()
         elif view_name == "results":
              if not app_state.team_count_slider or not app_state.team_count_slider.value or len(app_state.selecionados) < int(app_state.team_count_slider.value):
-                # --- CORREÇÃO DE COR ---
+                # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
                 page.snack_bar = ft.SnackBar(ft.Text("Verifique o número de times e jogadores selecionados."), bgcolor="red_700")
                 # --- FIM DA CORREÇÃO ---
                 page.snack_bar.open = True

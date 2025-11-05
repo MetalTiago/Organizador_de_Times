@@ -7,7 +7,6 @@ def build_privacy_policy_view(state):
     """Constrói a view da Política de Privacidade."""
 
     def load_policy_content(lang_code):
-        """Carrega o conteúdo do ficheiro markdown com base no idioma."""
         filename_map = {
             "pt_br": "privacy_policy_pt.md",
             "es": "privacy_policy_es.md",
@@ -46,7 +45,7 @@ def build_privacy_policy_view(state):
             ft.Row(
                 [
                     ft.IconButton(
-                        icon="arrow_back", # <--- CORREÇÃO DE ÍCONE
+                        icon="arrow_back", # <--- CORRIGIDO
                         on_click=lambda e: state.navigate_to("settings"), 
                         tooltip=get_string(state, "back_button_tooltip")
                     ),

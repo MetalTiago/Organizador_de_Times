@@ -7,7 +7,6 @@ def build_terms_of_use_view(state):
     """Constrói a view dos Termos de Uso."""
 
     def load_terms_content(lang_code):
-        """Carrega o conteúdo do ficheiro markdown com base no idioma."""
         filename_map = {
             "pt_br": "terms_of_use_pt.md",
             "es": "terms_of_use_es.md",
@@ -46,7 +45,7 @@ def build_terms_of_use_view(state):
             ft.Row(
                 [
                     ft.IconButton(
-                        icon="arrow_back", # <--- CORREÇÃO DE ÍCONE
+                        icon="arrow_back", # <--- CORRIGIDO
                         on_click=lambda e: state.navigate_to("settings"), 
                         tooltip=get_string(state, "back_button_tooltip")
                     ),

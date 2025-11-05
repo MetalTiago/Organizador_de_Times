@@ -32,7 +32,7 @@ def build_settings_view(state):
         expand=True
     )
 
-    # --- FUNÇÕES PRO REMOVIDAS ---
+    # --- Funções Pro REMOVIDAS ---
 
     def save_file_result(e: ft.FilePickerResultEvent):
         if e.path:
@@ -42,7 +42,7 @@ def build_settings_view(state):
                     writer = csv.writer(csvfile, delimiter=';')
                     writer.writerow(["player_id", "player_name", "player_skill", "player_photo_path", "list_name"])
                     writer.writerows(associations)
-                # --- CORREÇÃO DE COR ---
+                # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
                 state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "export_success")), bgcolor="green_700") 
             except Exception as ex:
                 state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "export_error", error=ex)), bgcolor="red_700") 
@@ -80,7 +80,7 @@ def build_settings_view(state):
                         players_cache[player_name] = player_id
                     if player_id and list_id: add_player_to_list(list_id, player_id)
             summary_message = get_string(state, "import_summary", added_players=added_players, added_lists=added_lists, updated_players=updated_players, skipped_players=skipped_players)
-            # --- CORREÇÃO DE COR ---
+            # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
             state.page.snack_bar = ft.SnackBar(ft.Text(summary_message), bgcolor="green_700", duration=4000) 
         except Exception as ex: state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "import_error", error=ex)), bgcolor="red_700") 
             # --- FIM DA CORREÇÃO ---
@@ -93,7 +93,7 @@ def build_settings_view(state):
             import_mode_selection = ft.RadioGroup(content=ft.Row([ft.Radio(value="ignore", label=get_string(state, "import_mode_ignore")), ft.Radio(value="overwrite", label=get_string(state, "import_mode_overwrite"))]), value="ignore")
             def continue_import(e): perform_import(file_path, import_mode_selection.value)
             
-            # --- CORREÇÃO (show_dialog) ---
+            # --- CORRIGIDO (Sintaxe 0.28 - page.dialog) ---
             confirm_dialog = ft.AlertDialog(modal=True, title=ft.Text(get_string(state, "import_dialog_title")), content=ft.Column([ft.Text(get_string(state, "import_dialog_content")), import_mode_selection], tight=True, width=350), actions=[ft.TextButton(get_string(state, "cancel_button"), on_click=lambda e: setattr(confirm_dialog, 'open', False) or state.update()), ft.ElevatedButton(get_string(state, "continue_import_button"), on_click=continue_import)], actions_alignment=ft.MainAxisAlignment.END, shape=ft.RoundedRectangleBorder(radius=10),)
             state.page.dialog = confirm_dialog; confirm_dialog.open = True; state.update()
             # --- FIM DA CORREÇÃO ---
@@ -108,7 +108,7 @@ def build_settings_view(state):
         # --- Verificação Pro REMOVIDA (Fase 1.5) ---
         import_file_picker.pick_files( dialog_title=get_string(state, "open_file_dialog_title"), allow_multiple=False, allowed_extensions=["csv"] )
 
-    # --- MONTAGEM DA VIEW (CORREÇÃO DE ÍCONES E CORES) ---
+    # --- MONTAGEM DA VIEW (Ícones como strings) ---
     view = ft.Column(
         controls=[
             ft.Row([

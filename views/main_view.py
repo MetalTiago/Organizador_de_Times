@@ -1,18 +1,9 @@
 # views/main_view.py
 import flet as ft
-# Usa ft.colors. (correto para 0.25.x)
 from db_handler import (get_all_lists, create_list, delete_list, rename_list,
-                        get_list_name, count_custom_lists) # Importa count_custom_lists
-
-# --- CORREÇÃO DE COR ---
-# Importa a sua função apply_opacity para corrigir ft.colors.with_opacity
-from components import atualizar_tabela, apply_opacity 
-# --- FIM DA CORREÇÃO ---
-
+                        get_list_name, count_custom_lists) 
+from components import atualizar_tabela, apply_opacity
 from localization import get_string
-
-# (Esta é a Fase 1.5, vamos remover esta verificação depois)
-LIST_LIMIT_FREE = 2
 
 def build_main_view(state):
 
@@ -41,7 +32,6 @@ def build_main_view(state):
         options = [ft.dropdown.Option(key=str(list_id), text=list_name) for list_id, list_name in all_lists]
         options.insert(0, ft.dropdown.Option(key="0", text=get_string(state, "all_players_list_name")))
         state.lists_dropdown.options = options
-        
         valid_keys = [opt.key for opt in options]
         current_value = str(state.active_list_id) if str(state.active_list_id) in valid_keys else "0"
         if current_value == "0" and state.active_list_id != 0: 
@@ -52,26 +42,7 @@ def build_main_view(state):
     state.populate_lists_dropdown = populate_lists_dropdown
 
     def open_new_list_dialog(e):
-        # --- (Esta é a Fase 1.5, removeremos esta verificação) ---
-        if count_custom_lists() >= LIST_LIMIT_FREE:
-            
-            # --- CORREÇÃO (show_dialog) ---
-            # Este era o bloco que causou o erro
-            dialog = ft.AlertDialog(
-                 title=ft.Text(get_string(state, "limit_reached_title")),
-                 content=ft.Text(get_string(state, "list_limit_reached_message", limit=LIST_LIMIT_FREE)),
-                 actions=[
-                     ft.TextButton(get_string(state, "cancel_button"), on_click=lambda _: setattr(state.page.dialog, 'open', False) or state.update()),
-                     ft.ElevatedButton(get_string(state, "upgrade_button"), on_click=lambda _: state.navigate_to("settings")) 
-                 ]
-            )
-            state.page.dialog = dialog
-            dialog.open = True
-            # --- FIM DA CORREÇÃO ---
-            
-            state.update()
-            return 
-        # --- (Fim da Fase 1.5) ---
+        # --- Verificação de Limite REMOVIDA (Fase 1.5) ---
 
         new_list_name = ft.TextField(label=get_string(state, "new_list_name_label"), autofocus=True)
         def save_new_list(e):
@@ -90,39 +61,57 @@ def build_main_view(state):
                     else: new_list_name.error_text = f"Erro: {ex}"
                     if state.page.dialog: state.page.dialog.update()
 
-        # Esta parte já estava correta (usando page.dialog)
+        # --- CORRIGIDO (Sintaxe 0.28 - page.dialog) ---
         state.page.dialog = ft.AlertDialog(
             title=ft.Text(get_string(state, "create_list_dialog_title")),
             content=new_list_name,
             actions=[ ft.TextButton(get_string(state, "save_button"), on_click=save_new_list), ft.TextButton(get_string(state, "cancel_button"), on_click=lambda _: setattr(state.page.dialog, 'open', False) or state.update()) ]
         )
         state.page.dialog.open = True
+        # --- FIM DA CORREÇÃO ---
         state.update()
 
     def open_rename_list_dialog(e):
         if state.active_list_id == 0: return
         current_name = get_list_name(state.active_list_id)
         new_list_name_edit = ft.TextField(label=get_string(state, "new_list_name_label_edit"), value=current_name, autofocus=True)
+        
         def save_new_name(e):
             new_name_value = new_list_name_edit.value.strip()
             if new_name_value and new_name_value != current_name:
                 try:
                     rename_list(state.active_list_id, new_name_value)
                     state.page.dialog.open = False
-                    populate_lists_dropdown() 
+                    
+                    # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
                     state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "list_renamed_success")), bgcolor="green_700") 
+                    # --- FIM DA CORREÇÃO ---
                     state.page.snack_bar.open = True
-                    state.page.update()
+                    
+                    # --- CORREÇÃO DO BUG DE RENOMEAR (Sintaxe 0.28) ---
+                    # Verifica se estamos na página "manage_players"
+                    if state.page.route == "/manage_players":
+                        # Se sim, re-navega para a página para forçar a atualização do cabeçalho
+                        state.navigate_to("manage_players")
+                    else:
+                        # Se estivermos na "main", apenas atualiza o dropdown e a página
+                        populate_lists_dropdown()
+                        state.page.update()
+                    # --- FIM DA CORREÇÃO ---
+                        
                 except Exception as ex:
                      print(f"Erro ao renomear lista: {ex}")
                      if "UNIQUE constraint failed" in str(ex): new_list_name_edit.error_text = get_string(state, "list_already_exists_error")
                      else: new_list_name_edit.error_text = f"Erro: {ex}"
                      if state.page.dialog: state.page.dialog.update()
         
-        # Esta parte já estava correta (usando page.dialog)
-        state.page.dialog = ft.AlertDialog( title=ft.Text(get_string(state, "rename_list_dialog_title")), content=new_list_name_edit, actions=[ ft.TextButton(get_string(state, "save_button"), on_click=save_new_name), ft.TextButton(get_string(state, "cancel_button"), on_click=lambda e: setattr(state.page.dialog, 'open', False) or state.page.update()) ] ) 
+        # --- CORRIGIDO (Sintaxe 0.28 - page.dialog) ---
+        state.page.dialog = ft.AlertDialog( title=ft.Text(get_string(state, "rename_list_dialog_title")), content=new_list_name_edit, actions=[ ft.TextButton(get_string(state, "save_button"), on_click=save_new_name), ft.TextButton(get_string(state, "cancel_button"), on_click=lambda e: setattr(state.page.dialog, 'open', False) or state.page.update()) ] )
         state.page.dialog.open = True
+        # --- FIM DA CORREÇÃO ---
         state.update()
+    
+    # Esta linha é crucial: ela expõe a função para outras views
     state.open_rename_list_dialog = open_rename_list_dialog
 
     def manage_players_click(e):
@@ -131,11 +120,10 @@ def build_main_view(state):
 
     def delete_current_list(e):
         if state.active_list_id == 0: return
-        
-        # Esta parte usa SnackBar, não show_dialog, então está OK.
         if len(state.lists_dropdown.options) <= 2:
+            # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
             state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "cannot_delete_last_list_error")), bgcolor="red_700"); state.page.snack_bar.open = True; state.update(); return 
-        
+            # --- FIM DA CORREÇÃO ---
         list_name = get_list_name(state.active_list_id)
         def confirm_delete(e):
             try:
@@ -145,10 +133,11 @@ def build_main_view(state):
             except Exception as del_ex: print(f"Erro ao deletar lista: {del_ex}")
             finally: state.update() 
         
-        # Esta parte já estava correta (usando page.dialog)
+        # --- CORRIGIDO (Sintaxe 0.28 - page.dialog E Cores) ---
         state.page.dialog = ft.AlertDialog( title=ft.Text(get_string(state, "delete_confirmation_title")), content=ft.Text(get_string(state, "delete_list_confirmation_content", list_name=list_name)), actions=[ ft.TextButton(get_string(state, "yes_button"), on_click=confirm_delete, style=ft.ButtonStyle(color="red")), ft.TextButton(get_string(state, "no_button"), on_click=lambda e: setattr(state.page.dialog, 'open', False) or state.update()) ] ) 
-        
-        state.page.dialog.open = True; state.update()
+        state.page.dialog.open = True
+        # --- FIM DA CORREÇÃO ---
+        state.update()
 
     def start_new_selection(e): state.selecionados.clear(); state.photo_cache.clear(); state.navigate_to("selection")
 
@@ -167,6 +156,8 @@ def build_main_view(state):
 
     app_bar_actions = ft.Row([ state.theme_toggle_button, ft.IconButton(icon="settings", tooltip=get_string(state, "settings_tooltip"), on_click=lambda _: state.navigate_to("settings")) ])
 
+    # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
     view = ft.Column( [ ft.Container( content=ft.Row([ ft.Image(src="icon_android.jpg", width=35, height=35, border_radius=6), ft.Text(get_string(state, "app_title"), size=24, weight="bold", expand=True, text_align=ft.TextAlign.CENTER), app_bar_actions, ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER,), padding=ft.padding.only(left=15, right=10, top=8, bottom=8), bgcolor=apply_opacity("on_surface", 0.03), border_radius=8, margin=ft.margin.only(bottom=10) ), state.input_container, state.edit_container, main_view_content ], expand=True ) 
+    # --- FIM DA CORREÇÃO ---
     
     return view

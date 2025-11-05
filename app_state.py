@@ -4,41 +4,30 @@ import os
 import json
 from localization import get_string
 
-
-# Importa colors da maneira correta para Flet 0.25.x
-# (Se ft.colors não funcionar, a biblioteca pode precisar de uma verificação mais aprofundada)
-
 class AppState:
     """Classe para gerenciar o estado compartilhado do aplicativo."""
     def __init__(self, page):
         self.page = page
 
-        # Caminho do arquivo de configuração
         self.config_file_path = os.path.join(os.path.expanduser("~"), ".organizador_de_times", "config.json")
-
-        # --- CARREGA TODAS AS CONFIGURAÇÕES ---
         self.config = self._load_config()
         self.current_language = self.config.get("language", "pt_br")
-        self.preferred_theme_mode = self.config.get("theme_mode", "dark") # Padrão dark se não salvo
+        self.preferred_theme_mode = self.config.get("theme_mode", "dark") 
 
-        # --- USA OS VALORES CARREGADOS ---
         self.active_list_id = self.config.get("last_active_list_id", 0)
         self.preferred_team_count = self.config.get("last_team_count", 2)
-        self.is_pro_user = self.config.get("is_pro", False)
+        # REMOVIDO: self.is_pro_user
 
-        # --- O resto do estado ---
         self.photo_cache = {}
         self.resultado_times = []
         self.selecionados = []
 
-        # --- Componentes da UI ---
         self.team_count_slider = ft.Slider(
             min=2, max=10, divisions=8,
             value=self.preferred_team_count,
             label="{value}", width=250
         )
         self.team_count_text = ft.Text("", size=16, weight="bold")
-        # Atualiza o texto inicial após ter certeza que o idioma está carregado
         self.team_count_text.value = get_string(self, "teams_count", count=self.preferred_team_count)
 
         self.lists_dropdown = ft.Dropdown(expand=True)
@@ -76,19 +65,25 @@ class AppState:
             "language": "pt_br",
             "theme_mode": "dark",
             "last_active_list_id": 0,
-            "last_team_count": 2
+            "last_team_count": 2,
+            # "is_pro": False # REMOVIDO
         }
         try:
             if os.path.exists(self.config_file_path):
                 with open(self.config_file_path, 'r', encoding='utf-8') as f:
                     loaded_config = json.load(f)
                     config = default_config.copy(); config.update(loaded_config)
-                    # ... (mantenha as validações de language, theme_mode, etc., se quiser) ...
+                    if config["language"] not in ["pt_br", "en_us", "es"]: config["language"] = default_config["language"]
+                    if config["theme_mode"] not in ["dark", "light"]: config["theme_mode"] = default_config["theme_mode"]
+                    if not isinstance(config.get("last_active_list_id"), int): config["last_active_list_id"] = default_config["last_active_list_id"]
+                    if not isinstance(config.get("last_team_count"), int) or not (2 <= config["last_team_count"] <= 10): config["last_team_count"] = default_config["last_team_count"]
+                    # if not isinstance(config.get("is_pro"), bool): config["is_pro"] = default_config["is_pro"] # REMOVIDO
                     return config
             return default_config
         except Exception as e:
             print(f"Erro ao carregar config.json: {e}. Usando configuração padrão.")
             return default_config
+
     def save_config(self, key, value):
         try:
             current_config = self._load_config()
@@ -97,6 +92,7 @@ class AppState:
             with open(self.config_file_path, 'w', encoding='utf-8') as f:
                 json.dump(current_config, f, indent=4)
             # Atualiza estado interno
+            # if key == "is_pro": self.is_pro_user = value # REMOVIDO
             if key == "language": self.current_language = value
             elif key == "theme_mode": self.preferred_theme_mode = value
             elif key == "last_active_list_id": self.active_list_id = value
@@ -104,11 +100,12 @@ class AppState:
         except Exception as e:
             print(f"Erro ao salvar configuração ({key}): {e}")
 
+    # --- FUNÇÕES PRO REMOVIDAS ---
+    
     def save_language_preference(self, lang_code): self.save_config("language", lang_code)
     def save_theme_preference(self, theme_mode): self.save_config("theme_mode", theme_mode)
     def save_last_list_preference(self, list_id): self.save_config("last_active_list_id", list_id)
     def save_last_team_count_preference(self, count): self.save_config("last_team_count", count)
-    
 
     def update(self):
         if self.page: self.page.update()
