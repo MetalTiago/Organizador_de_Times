@@ -45,6 +45,12 @@ class AppState:
         self.main_view_content = None
         self.list_management_menu = None
         self.organize_button = None
+        
+        # FilePickers persistentes que serão criados em main.py
+        self.input_file_picker = None
+        self.edit_file_picker = None
+        self.export_file_picker = None
+        self.import_file_picker = None
 
         self.navigate_to = None
         self.show_form = None

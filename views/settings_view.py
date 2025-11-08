@@ -1,6 +1,7 @@
 # views/settings_view.py
 import flet as ft
 import csv
+# import asyncio # <-- REMOVIDO
 from db_handler import (
     get_all_player_list_associations, get_player_by_name, get_list_by_name,
     insert_player, update_player, create_list, add_player_to_list
@@ -34,7 +35,7 @@ def build_settings_view(state):
 
     # --- Funções Pro REMOVIDAS ---
 
-    def save_file_result(e: ft.FilePickerResultEvent):
+    def save_file_result(e: ft.FilePickerResultEvent): # <--- Revertido para 'def'
         if e.path:
             try:
                 associations = get_all_player_list_associations()
@@ -42,25 +43,35 @@ def build_settings_view(state):
                     writer = csv.writer(csvfile, delimiter=';')
                     writer.writerow(["player_id", "player_name", "player_skill", "player_photo_path", "list_name"])
                     writer.writerows(associations)
-                # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
-                state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "export_success")), bgcolor="green_700") 
+                state.page.snack_bar = ft.SnackBar(
+                    ft.Text(get_string(state, "export_success")), 
+                    bgcolor="green_700"
+                )
+                state.page.snack_bar.open = True
             except Exception as ex:
-                state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "export_error", error=ex)), bgcolor="red_700") 
-                # --- FIM DA CORREÇÃO ---
-            state.page.snack_bar.open = True; state.update()
+                state.page.snack_bar = ft.SnackBar(
+                    ft.Text(get_string(state, "export_error", error=ex)), 
+                    bgcolor="red_700"
+                )
+                state.page.snack_bar.open = True
+            state.page.update() # <--- update() síncrono
 
-    export_file_picker = ft.FilePicker(on_result=save_file_result)
+    if state.export_file_picker:
+        state.export_file_picker.on_result = save_file_result # <--- Revertido
 
-    def export_data_click(e):
-        # --- Verificação Pro REMOVIDA (Fase 1.5) ---
-        export_file_picker.save_file(
-            dialog_title=get_string(state, "save_file_dialog_title"),
-            file_name="listas_de_jogadores.csv",
-            allowed_extensions=["csv"]
-        )
+    def export_data_click(e): # <--- Revertido para 'def'
+        if state.export_file_picker:
+            state.export_file_picker.save_file( # <--- Revertido para 'save_file'
+                dialog_title=get_string(state, "save_file_dialog_title"),
+                file_name="listas_de_jogadores.csv",
+                allowed_extensions=["csv"]
+            )
+        else:
+            print("Export file picker não inicializado")
 
-    def perform_import(file_path, mode):
+    def perform_import(file_path, mode, dialog_to_close): # <--- Revertido para 'def'
         added_players = 0; updated_players = 0; skipped_players = 0; added_lists = 0;
+        snack_bar = None
         try:
             with open(file_path, "r", encoding="utf-8-sig") as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=';'); lists_cache = {}; players_cache = {}
@@ -80,35 +91,64 @@ def build_settings_view(state):
                         players_cache[player_name] = player_id
                     if player_id and list_id: add_player_to_list(list_id, player_id)
             summary_message = get_string(state, "import_summary", added_players=added_players, added_lists=added_lists, updated_players=updated_players, skipped_players=skipped_players)
-            # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
-            state.page.snack_bar = ft.SnackBar(ft.Text(summary_message), bgcolor="green_700", duration=4000) 
-        except Exception as ex: state.page.snack_bar = ft.SnackBar(ft.Text(get_string(state, "import_error", error=ex)), bgcolor="red_700") 
-            # --- FIM DA CORREÇÃO ---
-        if state.page.dialog: state.page.dialog.open = False
-        state.page.snack_bar.open = True; state.update()
+            snack_bar = ft.SnackBar(
+                ft.Text(summary_message), 
+                bgcolor="green_700", 
+                duration=4000
+            )
+        except Exception as ex: 
+            snack_bar = ft.SnackBar(
+                ft.Text(get_string(state, "import_error", error=ex)), 
+                bgcolor="red_700"
+            )
+        
+        state.page.close(dialog_to_close)
+        
+        if snack_bar:
+            state.page.snack_bar = snack_bar
+            snack_bar.open = True
+            state.page.update() # <--- update() síncrono
+        else:
+            state.page.update() # <--- update() síncrono
 
-    def open_file_result(e: ft.FilePickerResultEvent):
+    def open_file_result(e: ft.FilePickerResultEvent): # <--- Revertido para 'def'
         if e.files:
             file_path = e.files[0].path
             import_mode_selection = ft.RadioGroup(content=ft.Row([ft.Radio(value="ignore", label=get_string(state, "import_mode_ignore")), ft.Radio(value="overwrite", label=get_string(state, "import_mode_overwrite"))]), value="ignore")
-            def continue_import(e): perform_import(file_path, import_mode_selection.value)
             
-            # --- CORRIGIDO (Sintaxe 0.28 - page.dialog) ---
-            confirm_dialog = ft.AlertDialog(modal=True, title=ft.Text(get_string(state, "import_dialog_title")), content=ft.Column([ft.Text(get_string(state, "import_dialog_content")), import_mode_selection], tight=True, width=350), actions=[ft.TextButton(get_string(state, "cancel_button"), on_click=lambda e: setattr(confirm_dialog, 'open', False) or state.update()), ft.ElevatedButton(get_string(state, "continue_import_button"), on_click=continue_import)], actions_alignment=ft.MainAxisAlignment.END, shape=ft.RoundedRectangleBorder(radius=10),)
-            state.page.dialog = confirm_dialog; confirm_dialog.open = True; state.update()
-            # --- FIM DA CORREÇÃO ---
+            confirm_dialog = ft.AlertDialog(
+                modal=True, 
+                title=ft.Text(get_string(state, "import_dialog_title")), 
+                content=ft.Column([
+                    ft.Text(get_string(state, "import_dialog_content")), 
+                    import_mode_selection
+                ], tight=True, width=350), 
+                actions_alignment=ft.MainAxisAlignment.END, 
+                shape=ft.RoundedRectangleBorder(radius=10)
+            )
 
-    import_file_picker = ft.FilePicker(on_result=open_file_result)
-    if state.page: 
-        current_overlay_controls = state.page.overlay[:]
-        if export_file_picker not in current_overlay_controls: state.page.overlay.append(export_file_picker)
-        if import_file_picker not in current_overlay_controls: state.page.overlay.append(import_file_picker)
+            def continue_import(e): # <--- Revertido para 'def'
+                perform_import(file_path, import_mode_selection.value, confirm_dialog)
 
-    def import_data_click(e):
-        # --- Verificação Pro REMOVIDA (Fase 1.5) ---
-        import_file_picker.pick_files( dialog_title=get_string(state, "open_file_dialog_title"), allow_multiple=False, allowed_extensions=["csv"] )
+            confirm_dialog.actions = [
+                ft.TextButton(get_string(state, "cancel_button"), on_click=lambda e: state.page.close(confirm_dialog)), 
+                ft.ElevatedButton(get_string(state, "continue_import_button"), on_click=continue_import) # <--- Revertido
+            ]
+            
+            state.page.open(confirm_dialog)
 
-    # --- MONTAGEM DA VIEW (Ícones como strings) ---
+    if state.import_file_picker:
+        state.import_file_picker.on_result = open_file_result # <--- Revertido
+
+    def import_data_click(e): # <--- Revertido para 'def'
+        if state.import_file_picker:
+            state.import_file_picker.pick_files( # <--- Revertido para 'pick_files'
+                dialog_title=get_string(state, "open_file_dialog_title"), 
+                allow_multiple=False, allowed_extensions=["csv"] 
+            )
+        else:
+            print("Import file picker não inicializado")
+
     view = ft.Column(
         controls=[
             ft.Row([
@@ -130,13 +170,13 @@ def build_settings_view(state):
                         leading=ft.Icon(name="upload_file"),
                         title=ft.Text(get_string(state, "export_title")),
                         subtitle=ft.Text(get_string(state, "export_subtitle")),
-                        on_click=export_data_click 
+                        on_click=export_data_click # <--- Revertido
                     ),
                     ft.ListTile(
                         leading=ft.Icon(name="download"),
                         title=ft.Text(get_string(state, "import_title")),
                         subtitle=ft.Text(get_string(state, "import_subtitle")),
-                        on_click=import_data_click 
+                        on_click=import_data_click # <--- Revertido
                     ),
                     # Links Legais
                     ft.Divider(),

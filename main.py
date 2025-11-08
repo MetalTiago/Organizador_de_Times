@@ -12,7 +12,6 @@ from views.privacy_policy_view import build_privacy_policy_view
 from views.terms_of_use_view import build_terms_of_use_view
 from components import set_page_ref, build_input_container, build_edit_container, atualizar_tabela
 from localization import get_string
-# REMOVIDO: import ads_manager 
 
 # (Lógica de Fase 1.5 - Remoção de Limites)
 try:
@@ -44,9 +43,6 @@ def main(page: ft.Page):
     page.theme_mode = app_state.preferred_theme_mode
     page.title = get_string(app_state, "app_title")
 
-    app_state.input_container = build_input_container(app_state)
-    app_state.edit_container = build_edit_container(app_state)
-
     # --- CORRIGIDO (Sintaxe 0.28 - Ícones como Strings) ---
     initial_icon_name = "wb_sunny" if page.theme_mode == "light" else "nights_stay"
     app_state.theme_toggle_button = ft.IconButton(
@@ -58,9 +54,7 @@ def main(page: ft.Page):
     def toggle_theme(e):
         new_theme_mode = "light" if page.theme_mode == "dark" else "dark"
         page.theme_mode = new_theme_mode
-        # --- CORRIGIDO (Sintaxe 0.28 - Ícones como Strings) ---
         app_state.theme_toggle_button.icon = "wb_sunny" if new_theme_mode == "light" else "nights_stay"
-        # --- FIM DA CORREÇÃO ---
         app_state.theme_toggle_button.tooltip = get_string(app_state, "toggle_theme_tooltip")
         app_state.save_theme_preference(new_theme_mode)
         page.update()
@@ -92,7 +86,11 @@ def main(page: ft.Page):
     app_state.hide_form = hide_form
 
     def navigate_to(view_name):
-        page.clean()
+        
+        # --- CORREÇÃO CRÍTICA DE NAVEGAÇÃO ---
+        page.controls.clear() # <-- Limpa a tela, mas MANTÉM Overlays e Dialogs
+        # --- FIM DA CORREÇÃO ---
+
         page.route = f"/{view_name}"
         builder = view_builders.get(view_name)
         if not builder:
@@ -111,14 +109,40 @@ def main(page: ft.Page):
              if hasattr(app_state, 'montar_lista_jogadores') and app_state.montar_lista_jogadores: app_state.montar_lista_jogadores()
         elif view_name == "results":
              if not app_state.team_count_slider or not app_state.team_count_slider.value or len(app_state.selecionados) < int(app_state.team_count_slider.value):
-                # --- CORRIGIDO (Sintaxe 0.28 - Cores como Strings) ---
-                page.snack_bar = ft.SnackBar(ft.Text("Verifique o número de times e jogadores selecionados."), bgcolor="red_700")
-                # --- FIM DA CORREÇÃO ---
+                
+                # --- CORREÇÃO (API SnackBar Revertida) ---
+                # Voltamos a usar a API de propriedade, que agora funciona
+                page.snack_bar = ft.SnackBar(
+                    ft.Text("Verifique o número de times e jogadores selecionados."), 
+                    bgcolor="red_700"
+                )
                 page.snack_bar.open = True
-                page.clean(); navigate_to("selection"); return
+                # --- FIM DA CORREÇÃO ---
+
+                navigate_to("selection"); 
+                return
              
         page.update() 
     app_state.navigate_to = navigate_to
+
+    # --- CORREÇÃO ARQUITETURAL (FilePickers) ---
+    input_file_picker = ft.FilePicker()
+    edit_file_picker = ft.FilePicker()
+    export_file_picker = ft.FilePicker()
+    import_file_picker = ft.FilePicker()
+    
+    app_state.input_file_picker = input_file_picker
+    app_state.edit_file_picker = edit_file_picker
+    app_state.export_file_picker = export_file_picker
+    app_state.import_file_picker = import_file_picker
+    
+    page.overlay.extend([
+        input_file_picker,
+        edit_file_picker,
+        export_file_picker,
+        import_file_picker
+    ])
+    # --- FIM DA CORREÇÃO ---
 
     navigate_to("main")
 
